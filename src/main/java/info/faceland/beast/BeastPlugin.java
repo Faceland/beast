@@ -13,8 +13,10 @@ import info.faceland.facecore.shade.nun.ivory.config.VersionedIvoryConfiguration
 import info.faceland.facecore.shade.nun.ivory.config.VersionedIvoryYamlConfiguration;
 import info.faceland.facecore.shade.nun.ivory.config.settings.IvorySettings;
 import net.objecthunter.exp4j.ExpressionBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.HandlerList;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -104,12 +106,12 @@ public final class BeastPlugin extends FacePlugin {
 
     @Override
     public void postEnable() {
-
+        Bukkit.getPluginManager().registerEvents(new BeastListener(this), this);
     }
 
     @Override
     public void preDisable() {
-
+        HandlerList.unregisterAll(this);
     }
 
     @Override
@@ -119,6 +121,10 @@ public final class BeastPlugin extends FacePlugin {
 
     @Override
     public void postDisable() {
+        settings = null;
+        replacementsYAML = null;
+        monstersYAML = null;
+        configYAML = null;
         beastDataMap = null;
     }
 
