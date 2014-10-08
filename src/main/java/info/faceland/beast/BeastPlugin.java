@@ -136,4 +136,11 @@ public final class BeastPlugin extends FacePlugin {
         return settings;
     }
 
+    public BeastData getData(EntityType type) {
+        if (beastDataMap.containsKey(type)) {
+            return beastDataMap.get(type);
+        }
+        return null;
+    }
+
 }
