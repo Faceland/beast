@@ -12,6 +12,7 @@ import net.objecthunter.exp4j.Expression;
 import org.bukkit.entity.EntityType;
 import org.bukkit.potion.PotionEffect;
 
+import java.util.List;
 import java.util.Map;
 
 public final class BeastData {
@@ -21,7 +22,7 @@ public final class BeastData {
     private Expression healthExpression;
     private Expression experienceExpression;
     private Expression damageExpression;
-    private Map<Integer, PotionEffect> potionEffectMap;
+    private Map<Integer, List<PotionEffect>> potionEffectMap;
 
     public BeastData(EntityType type) {
         this.type = type;
@@ -63,11 +64,11 @@ public final class BeastData {
         this.damageExpression = damageExpression;
     }
 
-    public Map<Integer, PotionEffect> getPotionEffectMap() {
+    public Map<Integer, List<PotionEffect>> getPotionEffectMap() {
         return potionEffectMap;
     }
 
-    public void setPotionEffectMap(Map<Integer, PotionEffect> potionEffectMap) {
+    public void setPotionEffectMap(Map<Integer, List<PotionEffect>> potionEffectMap) {
         this.potionEffectMap = potionEffectMap;
     }
 
