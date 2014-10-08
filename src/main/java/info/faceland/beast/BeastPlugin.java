@@ -12,10 +12,16 @@ import info.faceland.api.FacePlugin;
 import info.faceland.facecore.shade.nun.ivory.config.VersionedIvoryConfiguration;
 import info.faceland.facecore.shade.nun.ivory.config.VersionedIvoryYamlConfiguration;
 import info.faceland.facecore.shade.nun.ivory.config.settings.IvorySettings;
+import net.objecthunter.exp4j.ExpressionBuilder;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class BeastPlugin extends FacePlugin {
@@ -58,6 +64,42 @@ public final class BeastPlugin extends FacePlugin {
     @Override
     public void enable() {
         settings.load(configYAML, replacementsYAML, monstersYAML);
+
+        for (String key : monstersYAML.getKeys(false)) {
+            if (!monstersYAML.isConfigurationSection(key)) {
+                continue;
+            }
+            EntityType entityType = EntityType.fromName(key);
+            if (entityType == null) {
+                continue;
+            }
+            ConfigurationSection cs = monstersYAML.getConfigurationSection(key);
+            BeastData data = new BeastData(entityType);
+            data.setNameFormat(cs.getString("name"));
+            String healthExpStr = cs.getString("health");
+            String damageExpStr = cs.getString("damage");
+            String experienceExpStr = cs.getString("experience");
+            data.setHealthExpression(new ExpressionBuilder(healthExpStr).variables("LEVEL").build());
+            data.setDamageExpression(new ExpressionBuilder(damageExpStr).variables("LEVEL").build());
+            data.setExperienceExpression(new ExpressionBuilder(experienceExpStr).variables("LEVEL").build());
+            if (cs.isConfigurationSection("potion-effects")) {
+                Map<Integer, List<PotionEffect>> effects = new HashMap<>();
+                ConfigurationSection peCS = cs.getConfigurationSection("potion-effects");
+                for (String k : peCS.getKeys(false)) {
+                    List<String> list = peCS.getStringList(k);
+                    List<PotionEffect> pe = new ArrayList<>();
+                    for (String s : list) {
+                        PotionEffect pot = parsePotionEffect(s);
+                        if (pot != null) {
+                            pe.add(pot);
+                        }
+                    }
+                    effects.put(Integer.parseInt(k), pe);
+                }
+                data.setPotionEffectMap(effects);
+            }
+            beastDataMap.put(entityType, data);
+        }
     }
 
     @Override
@@ -78,6 +120,16 @@ public final class BeastPlugin extends FacePlugin {
     @Override
     public void postDisable() {
         beastDataMap = null;
+    }
+
+    private PotionEffect parsePotionEffect(String s) {
+        String[] spl = s.split(":");
+        if (spl.length < 2) {
+            return null;
+        }
+        PotionEffectType type = PotionEffectType.getByName(spl[0]);
+        int i = Integer.parseInt(spl[1]);
+        return new PotionEffect(type, 20 * 5, i);
     }
 
 }
