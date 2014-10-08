@@ -132,4 +132,8 @@ public final class BeastPlugin extends FacePlugin {
         return new PotionEffect(type, 20 * 5, i);
     }
 
+    public IvorySettings getSettings() {
+        return settings;
+    }
+
 }
