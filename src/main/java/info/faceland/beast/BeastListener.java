@@ -9,6 +9,7 @@
 package info.faceland.beast;
 
 import com.google.common.base.CharMatcher;
+import info.faceland.math.Vec2;
 import info.faceland.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -62,8 +63,10 @@ public final class BeastListener implements Listener {
         if (startingLevel < 0) {
             return;
         }
-        double distanceFromSpawn = event.getLocation().distanceSquared(
-                event.getLocation().getWorld().getSpawnLocation());
+        Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
+        Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
+                                 event.getLocation().getWorld().getSpawnLocation().getZ());
+        double distanceFromSpawn = pos.distanceSquared(worldPos);
         double pow = Math.pow(
                 plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                                             ".distance-per-level", 150), 2);
