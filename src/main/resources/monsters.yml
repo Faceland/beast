@@ -1,8 +1,8 @@
-version: "0.0.1"
+version: "0.0.2"
 ZOMBIE:
   name: "<white>Lvl %level% Zombie"
   experience: 1 + (LEVEL * 2)
-  health: LEVEL + (LEVEL * (LEVEL / 10))
+  health: 1 + LEVEL + (LEVEL * (LEVEL / 10))
   damage: 1 + (LEVEL / 4)
   potion-effects:
     10:
