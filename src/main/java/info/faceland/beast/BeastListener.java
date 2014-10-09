@@ -71,7 +71,7 @@ public final class BeastListener implements Listener {
                 data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}})));
         double currentMaxHealth = event.getEntity().getMaxHealth();
         double newMaxHealth = data.getHealthExpression().setVariable("LEVEL", level).evaluate();
-        event.getEntity().setCustomNameVisible(true);
+        //event.getEntity().setCustomNameVisible(true);
         event.getEntity().setHealth(Math.min(currentMaxHealth, newMaxHealth) / 2);
         event.getEntity().setMaxHealth(newMaxHealth);
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
