@@ -34,6 +34,7 @@ public final class BeastPlugin extends FacePlugin {
     private VersionedIvoryYamlConfiguration monstersYAML;
     private VersionedIvoryYamlConfiguration replacementsYAML;
     private IvorySettings settings;
+    private BeastTask task;
 
     @Override
     public void preEnable() {
@@ -62,6 +63,8 @@ public final class BeastPlugin extends FacePlugin {
         }
 
         settings = new IvorySettings();
+
+        task = new BeastTask(this);
     }
 
     @Override
@@ -108,6 +111,7 @@ public final class BeastPlugin extends FacePlugin {
     @Override
     public void postEnable() {
         Bukkit.getPluginManager().registerEvents(new BeastListener(this), this);
+        task.runTaskTimer(this, 20L * 5, 20L * 5);
     }
 
     @Override
