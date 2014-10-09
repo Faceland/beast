@@ -12,6 +12,7 @@ import info.faceland.api.FacePlugin;
 import info.faceland.facecore.shade.nun.ivory.config.VersionedIvoryConfiguration;
 import info.faceland.facecore.shade.nun.ivory.config.VersionedIvoryYamlConfiguration;
 import info.faceland.facecore.shade.nun.ivory.config.settings.IvorySettings;
+import info.faceland.utils.StringConverter;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -96,7 +97,7 @@ public final class BeastPlugin extends FacePlugin {
                             pe.add(pot);
                         }
                     }
-                    effects.put(Integer.parseInt(k), pe);
+                    effects.put(StringConverter.toInt(k), pe);
                 }
                 data.setPotionEffectMap(effects);
             }
@@ -134,7 +135,7 @@ public final class BeastPlugin extends FacePlugin {
             return null;
         }
         PotionEffectType type = PotionEffectType.getByName(spl[0]);
-        int i = Integer.parseInt(spl[1]);
+        int i = StringConverter.toInt(spl[1]);
         return new PotionEffect(type, 20 * 5, i);
     }
 
