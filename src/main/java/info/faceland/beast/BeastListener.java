@@ -70,8 +70,9 @@ public final class BeastListener implements Listener {
         double pow = Math.pow(
                 plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                                             ".distance-per-level", 150), 2);
-        int level = (int) (startingLevel + Math.round(distanceFromSpawn / pow));
-        plugin.getLogger().info(event.getEntityType() + " : " + distanceFromSpawn + " : " + pow + " : " + level);
+        int level = (int) (startingLevel + Math.floor(distanceFromSpawn / pow));
+        plugin.getLogger().info(event.getEntityType() + " : " + distanceFromSpawn + " : " + pow + " : " +
+                                startingLevel + " : " + level);
         event.getEntity().setCustomName(TextUtils.color(TextUtils.args(
                 data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}})));
         double currentMaxHealth = event.getEntity().getMaxHealth();
