@@ -32,7 +32,8 @@ public final class BeastListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCreatureSpawnLowest(final CreatureSpawnEvent event) {
-        if (event.isCancelled() || !(event.getEntity() instanceof Monster)) {
+        if (event.isCancelled() || !(event.getEntity() instanceof Monster) ||
+            event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             return;
         }
         final EntityType replacementType = EntityType.fromName(
@@ -54,7 +55,7 @@ public final class BeastListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
         BeastData data = plugin.getData(event.getEntityType());
-        if (data == null || event.isCancelled()) {
+        if (data == null || event.isCancelled() || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             return;
         }
         int startingLevel =
