@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -79,6 +80,9 @@ public final class BeastListener implements Listener {
         event.getEntity().setHealth(Math.min(currentMaxHealth, newMaxHealth) / 2);
         event.getEntity().setMaxHealth(newMaxHealth);
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
+        if (event.getEntity() instanceof Wolf) {
+            ((Wolf) event.getEntity()).setAngry(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
