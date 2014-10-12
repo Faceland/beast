@@ -85,7 +85,7 @@ public final class BeastListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDeathEvent(EntityDeathEvent event) {
         if (event instanceof PlayerDeathEvent) {
             return;
@@ -97,6 +97,11 @@ public final class BeastListener implements Listener {
         int level = Integer.parseInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity()
                                                                                             .getCustomName())));
         event.setDroppedExp((int) data.getExperienceExpression().setVariable("LEVEL", level).evaluate());
+        if (data.getDrops().isEmpty()) {
+            return;
+        }
+        event.getDrops().clear();
+        event.getDrops().addAll(data.getDrops());
     }
 
 }
