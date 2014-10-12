@@ -12,12 +12,16 @@ import info.faceland.api.FacePlugin;
 import info.faceland.facecore.shade.nun.ivory.config.VersionedIvoryConfiguration;
 import info.faceland.facecore.shade.nun.ivory.config.VersionedIvoryYamlConfiguration;
 import info.faceland.facecore.shade.nun.ivory.config.settings.IvorySettings;
+import info.faceland.hilt.HiltItemStack;
 import info.faceland.utils.StringConverter;
+import info.faceland.utils.TextUtils;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -103,6 +107,25 @@ public final class BeastPlugin extends FacePlugin {
                     effects.put(StringConverter.toInt(k), pe);
                 }
                 data.setPotionEffectMap(effects);
+            }
+            if (cs.isConfigurationSection("drops")) {
+                List<ItemStack> drops = new ArrayList<>();
+                ConfigurationSection dCS = cs.getConfigurationSection("drops");
+                for (String k : dCS.getKeys(false)) {
+                    if (!dCS.isConfigurationSection(k)) {
+                        continue;
+                    }
+                    ConfigurationSection inner = dCS.getConfigurationSection(k);
+                    HiltItemStack itemStack = new HiltItemStack(StringConverter.toMaterial(inner.getString
+                            ("material")));
+                    if (itemStack.getType() == Material.AIR) {
+                        continue;
+                    }
+                    itemStack.setName(TextUtils.color(inner.getString("name")));
+                    itemStack.setLore(TextUtils.color(inner.getStringList("lore")));
+                    drops.add(itemStack);
+                }
+                data.setDrops(drops);
             }
             beastDataMap.put(entityType, data);
         }
