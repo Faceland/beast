@@ -15,6 +15,7 @@ import info.faceland.facecore.shade.nun.ivory.config.settings.IvorySettings;
 import info.faceland.utils.StringConverter;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.HandlerList;
@@ -114,6 +115,9 @@ public final class BeastPlugin extends FacePlugin {
                     ConfigurationSection inner = dCS.getConfigurationSection(k);
                     DropData dropData = new DropData(StringConverter.toMaterial(k), inner.getInt("min-amount"),
                                                      inner.getInt("max-amount"), inner.getDouble("chance"));
+                    if (dropData.getMaterial() == Material.AIR) {
+                        continue;
+                    }
                     drops.add(dropData);
                 }
                 data.setDrops(drops);
