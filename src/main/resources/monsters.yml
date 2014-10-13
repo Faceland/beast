@@ -1,4 +1,4 @@
-version: "0.0.4"
+version: "0.0.5"
 ZOMBIE:
   name: "<white>Lvl %level% Zombie"
   experience: 1 + (LEVEL * 2)
@@ -10,8 +10,7 @@ ZOMBIE:
     20:
     - INCREASE_DAMAGE:1
   drops:
-    namesdontmatter:
-      material: WOOD_SWORD
-      name: "<gold>Sword!"
-      lore:
-      - "<gold>Sword sword!"
+    WOOD_SWORD:
+      min-amount: 1
+      max-amount: 5
+      chance: 0.5
