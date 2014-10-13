@@ -10,7 +10,6 @@ package info.faceland.beast;
 
 import net.objecthunter.exp4j.Expression;
 import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public final class BeastData {
     private Expression experienceExpression;
     private Expression damageExpression;
     private Map<Integer, List<PotionEffect>> potionEffectMap;
-    private List<ItemStack> drops;
+    private List<DropData> drops;
 
     public BeastData(EntityType type) {
         this.type = type;
@@ -95,11 +94,11 @@ public final class BeastData {
         return type == beastData.type;
     }
 
-    public List<ItemStack> getDrops() {
+    public List<DropData> getDrops() {
         return drops;
     }
 
-    public void setDrops(List<ItemStack> drops) {
+    public void setDrops(List<DropData> drops) {
         if (drops == null) {
             this.drops.clear();
         } else {
