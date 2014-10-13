@@ -22,13 +22,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Random;
 
 public final class BeastListener implements Listener {
 
     private final BeastPlugin plugin;
+    private final Random random;
 
     public BeastListener(BeastPlugin plugin) {
         this.plugin = plugin;
+        this.random = new Random(System.currentTimeMillis());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -101,7 +106,15 @@ public final class BeastListener implements Listener {
             return;
         }
         event.getDrops().clear();
-        event.getDrops().addAll(data.getDrops());
+        for (DropData dropData : data.getDrops()) {
+            if (random.nextDouble() < dropData.getChance()) {
+                int amount = (int) (random.nextDouble() * (dropData.getMaximumAmount() - dropData.getMinimumAmount()));
+                if (amount <= 0) {
+                    continue;
+                }
+                event.getDrops().add(new ItemStack(dropData.getMaterial(), amount));
+            }
+        }
     }
 
 }
