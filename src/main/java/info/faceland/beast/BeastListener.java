@@ -13,6 +13,7 @@ import info.faceland.math.Vec2;
 import info.faceland.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Wolf;
@@ -109,7 +110,7 @@ public final class BeastListener implements Listener {
         for (DropData dropData : data.getDrops()) {
             if (random.nextDouble() < dropData.getChance()) {
                 int amount = (int) (random.nextDouble() * (dropData.getMaximumAmount() - dropData.getMinimumAmount()));
-                if (amount <= 0) {
+                if (amount <= 0 || dropData.getMaterial() == Material.AIR) {
                     continue;
                 }
                 event.getDrops().add(new ItemStack(dropData.getMaterial(), amount));
