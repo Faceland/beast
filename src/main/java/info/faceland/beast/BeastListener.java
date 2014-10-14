@@ -109,7 +109,8 @@ public final class BeastListener implements Listener {
         event.getDrops().clear();
         for (DropData dropData : data.getDrops()) {
             if (random.nextDouble() < dropData.getChance()) {
-                int amount = (int) (random.nextDouble() * (dropData.getMaximumAmount() - dropData.getMinimumAmount()));
+                int amount = dropData.getMinimumAmount() +
+                             (int) (random.nextDouble() * (dropData.getMaximumAmount() - dropData.getMinimumAmount()));
                 if (amount <= 0 || dropData.getMaterial() == Material.AIR) {
                     continue;
                 }
