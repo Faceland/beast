@@ -99,6 +99,7 @@ public final class BeastListener implements Listener {
         event.getEntity().setHealth(Math.min(currentMaxHealth, newMaxHealth) / 2);
         event.getEntity().setMaxHealth(newMaxHealth);
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
+        event.getEntity().setCanPickupItems(false);
         if (event.getEntity() instanceof Wolf) {
             ((Wolf) event.getEntity()).setAngry(true);
         }
