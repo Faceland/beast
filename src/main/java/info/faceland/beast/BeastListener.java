@@ -15,12 +15,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -100,8 +103,7 @@ public final class BeastListener implements Listener {
         if (data == null) {
             return;
         }
-        int level = Integer.parseInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity()
-                                                                                            .getCustomName())));
+        int level = Integer.parseInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
         event.setDroppedExp((int) data.getExperienceExpression().setVariable("LEVEL", level).evaluate());
         if (data.getDrops().isEmpty()) {
             return;
@@ -117,6 +119,20 @@ public final class BeastListener implements Listener {
                 event.getDrops().add(new ItemStack(dropData.getMaterial(), amount));
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity && event.getDamager() instanceof Monster)) {
+            return;
+        }
+        LivingEntity entity = (LivingEntity) event.getEntity();
+        BeastData data = plugin.getData(event.getEntityType());
+        if (data == null) {
+            return;
+        }
+        int level = Integer.parseInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(entity.getCustomName())));
+        event.setDamage(EntityDamageEvent.DamageModifier.BASE, data.getDamageExpression().setVariable("LEVEL", level).evaluate());
     }
 
 }
