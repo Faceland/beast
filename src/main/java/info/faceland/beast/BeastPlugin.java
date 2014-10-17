@@ -157,6 +157,9 @@ public final class BeastPlugin extends FacePlugin {
             return null;
         }
         PotionEffectType type = PotionEffectType.getByName(spl[0]);
+        if (type == null) {
+            return null;
+        }
         int i = StringConverter.toInt(spl[1]);
         return new PotionEffect(type, 20 * 5, i);
     }
