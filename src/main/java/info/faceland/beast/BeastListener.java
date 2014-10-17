@@ -17,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -73,6 +74,15 @@ public final class BeastListener implements Listener {
                                             ".starting-level", -1);
         if (startingLevel < 0) {
             return;
+        }
+        event.getEntity().getEquipment().clear();
+        if (event.getEntity() instanceof Skeleton) {
+            if (random.nextDouble() < plugin.getSettings().getDouble("config.give-skeletons-sword-chance", 0.1)) {
+                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.STONE_SWORD));
+            } else {
+                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.BOW));
+            }
+            event.getEntity().getEquipment().setItemInHandDropChance(0f);
         }
         Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
         Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
