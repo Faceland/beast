@@ -10,6 +10,7 @@ package info.faceland.beast;
 
 import com.google.common.base.CharMatcher;
 import info.faceland.math.Vec2;
+import info.faceland.utils.StringConverter;
 import info.faceland.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -111,7 +112,7 @@ public final class BeastListener implements Listener {
         if (data == null) {
             return;
         }
-        int level = Integer.parseInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
+        int level = StringConverter.toInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
         event.setDroppedExp((int) data.getExperienceExpression().setVariable("LEVEL", level).evaluate());
         if (data.getDrops().isEmpty()) {
             return;
