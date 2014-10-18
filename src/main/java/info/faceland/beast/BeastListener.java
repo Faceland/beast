@@ -15,7 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Wolf;
@@ -23,8 +22,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -131,24 +128,4 @@ public final class BeastListener implements Listener {
             }
         }
     }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof LivingEntity && event.getDamager() instanceof Monster) || event.isCancelled()) {
-            return;
-        }
-        LivingEntity entity = (LivingEntity) event.getEntity();
-        BeastData data = plugin.getData(event.getEntityType());
-        if (data == null) {
-            return;
-        }
-        int level = Integer.parseInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(entity.getCustomName())));
-        for (EntityDamageEvent.DamageModifier modifier : EntityDamageEvent.DamageModifier.values()) {
-            if (event.isApplicable(modifier)) {
-                event.setDamage(modifier, 0);
-            }
-        }
-        event.setDamage(data.getDamageExpression().setVariable("LEVEL", level).evaluate());
-    }
-
 }
