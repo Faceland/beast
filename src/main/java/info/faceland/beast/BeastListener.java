@@ -132,9 +132,9 @@ public final class BeastListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof LivingEntity && event.getDamager() instanceof Monster)) {
+        if (!(event.getEntity() instanceof LivingEntity && event.getDamager() instanceof Monster) || event.isCancelled()) {
             return;
         }
         LivingEntity entity = (LivingEntity) event.getEntity();
@@ -143,6 +143,11 @@ public final class BeastListener implements Listener {
             return;
         }
         int level = Integer.parseInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(entity.getCustomName())));
+        for (EntityDamageEvent.DamageModifier modifier : EntityDamageEvent.DamageModifier.values()) {
+            if (event.isApplicable(modifier)) {
+                event.setDamage(modifier, 0);
+            }
+        }
         event.setDamage(EntityDamageEvent.DamageModifier.BASE, data.getDamageExpression().setVariable("LEVEL", level).evaluate());
     }
 
