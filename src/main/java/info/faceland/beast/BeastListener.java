@@ -148,7 +148,7 @@ public final class BeastListener implements Listener {
                 event.setDamage(modifier, 0);
             }
         }
-        event.setDamage(EntityDamageEvent.DamageModifier.BASE, data.getDamageExpression().setVariable("LEVEL", level).evaluate());
+        event.setDamage(data.getDamageExpression().setVariable("LEVEL", level).evaluate());
     }
 
 }
