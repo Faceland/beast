@@ -48,7 +48,7 @@ public final class BeastListener implements Listener {
                 plugin.getSettings().getString("replacements." + event.getEntity().getType().name() + "." +
                                                event.getLocation().getBlock().getBiome().name(),
                                                event.getEntity().getType().name()));
-        if (replacementType == event.getEntity().getType()) {
+        if (replacementType == event.getEntity().getType() || replacementType == null) {
             return;
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
