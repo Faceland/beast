@@ -8,7 +8,7 @@
 
 package info.faceland.beast;
 
-import info.faceland.facecore.shade.google.common.base.CharMatcher;
+import com.google.common.base.CharMatcher;
 import info.faceland.utils.StringConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
