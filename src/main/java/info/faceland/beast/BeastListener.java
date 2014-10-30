@@ -63,7 +63,7 @@ public final class BeastListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
-        BeastData data = plugin.getData(event.getEntityType());
+        BeastData data = plugin.getData(event.getEntity().getType());
         if (data == null || event.isCancelled() || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             return;
         }
@@ -88,7 +88,7 @@ public final class BeastListener implements Listener {
         double distanceFromSpawn = pos.distance(worldPos);
         double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                                                  ".distance-per-level", 150);
-        int level = (int) (startingLevel + Math.floor(distanceFromSpawn / pow));
+        int level = (int) (startingLevel + distanceFromSpawn / pow);
         event.getEntity().setCustomName(TextUtils.color(TextUtils.args(
                 data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}})));
         double currentMaxHealth = event.getEntity().getMaxHealth();
