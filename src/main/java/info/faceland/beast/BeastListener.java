@@ -113,7 +113,7 @@ public final class BeastListener implements Listener {
             return;
         }
         int level = StringConverter.toInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
-        event.setDroppedExp((int) data.getExperienceExpression().setVariable("LEVEL", level).evaluate());
+        event.setDroppedExp(Math.max((int) data.getExperienceExpression().setVariable("LEVEL", level).evaluate(), 3));
         if (data.getDrops().isEmpty()) {
             return;
         }
