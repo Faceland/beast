@@ -8,7 +8,7 @@
 
 package info.faceland.beast;
 
-import com.google.common.base.CharMatcher;
+import info.faceland.facecore.shade.google.common.base.CharMatcher;
 import info.faceland.math.Vec2;
 import info.faceland.utils.StringConverter;
 import info.faceland.utils.TextUtils;
@@ -110,6 +110,9 @@ public final class BeastListener implements Listener {
         }
         BeastData data = plugin.getData(event.getEntityType());
         if (data == null) {
+            return;
+        }
+        if (event.getEntity().getCustomName() == null) {
             return;
         }
         int level = StringConverter.toInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));

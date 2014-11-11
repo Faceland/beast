@@ -9,9 +9,9 @@
 package info.faceland.beast;
 
 import info.faceland.api.FacePlugin;
-import info.faceland.facecore.shade.nun.ivory.config.VersionedIvoryConfiguration;
-import info.faceland.facecore.shade.nun.ivory.config.VersionedIvoryYamlConfiguration;
-import info.faceland.facecore.shade.nun.ivory.config.settings.IvorySettings;
+import info.faceland.config.VersionedFaceConfiguration;
+import info.faceland.config.VersionedFaceYamlConfiguration;
+import info.faceland.config.settings.FaceSettings;
 import info.faceland.utils.StringConverter;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
@@ -31,39 +31,39 @@ import java.util.Map;
 public final class BeastPlugin extends FacePlugin {
 
     private Map<EntityType, BeastData> beastDataMap;
-    private VersionedIvoryYamlConfiguration configYAML;
-    private VersionedIvoryYamlConfiguration monstersYAML;
-    private VersionedIvoryYamlConfiguration replacementsYAML;
-    private IvorySettings settings;
+    private VersionedFaceYamlConfiguration configYAML;
+    private VersionedFaceYamlConfiguration monstersYAML;
+    private VersionedFaceYamlConfiguration replacementsYAML;
+    private FaceSettings settings;
     private BeastTask task;
 
     @Override
     public void preEnable() {
         beastDataMap = new HashMap<>();
 
-        configYAML = new VersionedIvoryYamlConfiguration(new File(getDataFolder(), "config.yml"),
+        configYAML = new VersionedFaceYamlConfiguration(new File(getDataFolder(), "config.yml"),
                                                          getResource("config.yml"),
-                                                         VersionedIvoryConfiguration.VersionUpdateType
+                                                         VersionedFaceConfiguration.VersionUpdateType
                                                                  .BACKUP_AND_UPDATE);
         if (configYAML.update()) {
             getLogger().info("Updating config.yml");
         }
-        monstersYAML = new VersionedIvoryYamlConfiguration(new File(getDataFolder(), "monsters.yml"),
+        monstersYAML = new VersionedFaceYamlConfiguration(new File(getDataFolder(), "monsters.yml"),
                                                            getResource("monsters.yml"),
-                                                           VersionedIvoryConfiguration.VersionUpdateType
+                                                           VersionedFaceConfiguration.VersionUpdateType
                                                                    .BACKUP_AND_UPDATE);
         if (monstersYAML.update()) {
             getLogger().info("Updating monsters.yml");
         }
-        replacementsYAML = new VersionedIvoryYamlConfiguration(new File(getDataFolder(), "replacements.yml"),
+        replacementsYAML = new VersionedFaceYamlConfiguration(new File(getDataFolder(), "replacements.yml"),
                                                                getResource("replacements.yml"),
-                                                               VersionedIvoryConfiguration.VersionUpdateType
+                                                               VersionedFaceConfiguration.VersionUpdateType
                                                                        .BACKUP_AND_UPDATE);
         if (replacementsYAML.update()) {
             getLogger().info("Updating replacements.yml");
         }
 
-        settings = new IvorySettings();
+        settings = new FaceSettings();
 
         task = new BeastTask(this);
     }
@@ -164,7 +164,7 @@ public final class BeastPlugin extends FacePlugin {
         return new PotionEffect(type, 20 * 5, i);
     }
 
-    public IvorySettings getSettings() {
+    public FaceSettings getSettings() {
         return settings;
     }
 

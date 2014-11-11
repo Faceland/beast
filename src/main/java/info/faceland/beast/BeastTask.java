@@ -8,7 +8,7 @@
 
 package info.faceland.beast;
 
-import com.google.common.base.CharMatcher;
+import info.faceland.facecore.shade.google.common.base.CharMatcher;
 import info.faceland.utils.StringConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -41,6 +41,9 @@ public final class BeastTask extends BukkitRunnable {
                 }
                 BeastData data = plugin.getData(le.getType());
                 if (data == null) {
+                    continue;
+                }
+                if (le.getCustomName() == null) {
                     continue;
                 }
                 int level = StringConverter.toInt(
