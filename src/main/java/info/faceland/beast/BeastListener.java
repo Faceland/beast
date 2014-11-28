@@ -23,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -115,8 +116,13 @@ public final class BeastListener implements Listener {
         if (event.getEntity().getCustomName() == null) {
             return;
         }
+        double mult = 1D;
+        EntityDamageEvent.DamageCause cause = event.getEntity().getLastDamageCause().getCause();
+        if (cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+            mult = 0.2D;
+        }
         int level = StringConverter.toInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
-        event.setDroppedExp((int) data.getExperienceExpression().setVariable("LEVEL", level).evaluate());
+        event.setDroppedExp((int) (data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * mult));
         if (data.getDrops().isEmpty()) {
             return;
         }
