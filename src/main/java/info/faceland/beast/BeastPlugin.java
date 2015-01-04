@@ -1,19 +1,19 @@
-/******************************************************************************
- * Copyright (c) 2014, Richard Harrah                                         *
- *                                                                            *
- * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
- *                                                                            *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- ******************************************************************************/
-
+/*
+ * This file is part of Mint, licensed under the ISC License.
+ *
+ * Copyright (c) 2014 Richard Harrah
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted,
+ * provided that the above copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+ * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
 package info.faceland.beast;
 
-import info.faceland.api.FacePlugin;
-import info.faceland.config.VersionedFaceConfiguration;
-import info.faceland.config.VersionedFaceYamlConfiguration;
-import info.faceland.config.settings.FaceSettings;
-import info.faceland.utils.StringConverter;
-import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,6 +21,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.HandlerList;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.nunnerycode.facecore.configuration.MasterConfiguration;
+import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration;
+import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration.VersionUpdateType;
+import org.nunnerycode.facecore.configuration.VersionedSmartYamlConfiguration;
+import org.nunnerycode.facecore.plugin.FacePlugin;
+import org.nunnerycode.kern.apache.commons.lang3.math.NumberUtils;
+import org.nunnerycode.kern.objecthunter.exp4j.ExpressionBuilder;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,45 +38,39 @@ import java.util.Map;
 public final class BeastPlugin extends FacePlugin {
 
     private Map<EntityType, BeastData> beastDataMap;
-    private VersionedFaceYamlConfiguration configYAML;
-    private VersionedFaceYamlConfiguration monstersYAML;
-    private VersionedFaceYamlConfiguration replacementsYAML;
-    private FaceSettings settings;
+    private VersionedSmartYamlConfiguration configYAML;
+    private VersionedSmartYamlConfiguration monstersYAML;
+    private VersionedSmartYamlConfiguration replacementsYAML;
+    private MasterConfiguration settings;
     private BeastTask task;
 
     @Override
-    public void preEnable() {
+    public void enable() {
         beastDataMap = new HashMap<>();
 
-        configYAML = new VersionedFaceYamlConfiguration(new File(getDataFolder(), "config.yml"),
-                                                         getResource("config.yml"),
-                                                         VersionedFaceConfiguration.VersionUpdateType
-                                                                 .BACKUP_AND_UPDATE);
+        configYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "config.yml"),
+                getResource("config.yml"),
+                VersionUpdateType.BACKUP_AND_UPDATE);
         if (configYAML.update()) {
             getLogger().info("Updating config.yml");
         }
-        monstersYAML = new VersionedFaceYamlConfiguration(new File(getDataFolder(), "monsters.yml"),
-                                                           getResource("monsters.yml"),
-                                                           VersionedFaceConfiguration.VersionUpdateType
-                                                                   .BACKUP_AND_UPDATE);
+        monstersYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "monsters.yml"),
+                getResource("monsters.yml"),
+                VersionUpdateType.BACKUP_AND_UPDATE);
         if (monstersYAML.update()) {
             getLogger().info("Updating monsters.yml");
         }
-        replacementsYAML = new VersionedFaceYamlConfiguration(new File(getDataFolder(), "replacements.yml"),
-                                                               getResource("replacements.yml"),
-                                                               VersionedFaceConfiguration.VersionUpdateType
-                                                                       .BACKUP_AND_UPDATE);
+        replacementsYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "replacements.yml"),
+                getResource("replacements.yml"),
+                VersionUpdateType.BACKUP_AND_UPDATE);
         if (replacementsYAML.update()) {
             getLogger().info("Updating replacements.yml");
         }
 
-        settings = new FaceSettings();
+        settings = new MasterConfiguration();
 
         task = new BeastTask(this);
-    }
 
-    @Override
-    public void enable() {
         settings.load(configYAML, replacementsYAML, monstersYAML);
 
         for (String key : monstersYAML.getKeys(false)) {
@@ -101,7 +102,7 @@ public final class BeastPlugin extends FacePlugin {
                             pe.add(pot);
                         }
                     }
-                    effects.put(StringConverter.toInt(k), pe);
+                    effects.put(NumberUtils.toInt(k), pe);
                 }
                 data.setPotionEffectMap(effects);
             }
@@ -113,7 +114,7 @@ public final class BeastPlugin extends FacePlugin {
                         continue;
                     }
                     ConfigurationSection inner = dCS.getConfigurationSection(k);
-                    DropData dropData = new DropData(StringConverter.toMaterial(k), inner.getInt("min-amount"),
+                    DropData dropData = new DropData(Material.getMaterial(k), inner.getInt("min-amount"),
                                                      inner.getInt("max-amount"), inner.getDouble("chance"));
                     if (dropData.getMaterial() == Material.AIR) {
                         continue;
@@ -124,26 +125,14 @@ public final class BeastPlugin extends FacePlugin {
             }
             beastDataMap.put(entityType, data);
         }
-    }
 
-    @Override
-    public void postEnable() {
         Bukkit.getPluginManager().registerEvents(new BeastListener(this), this);
         task.runTaskTimer(this, 20L * 5, 20L * 5);
     }
 
     @Override
-    public void preDisable() {
-        HandlerList.unregisterAll(this);
-    }
-
-    @Override
     public void disable() {
-
-    }
-
-    @Override
-    public void postDisable() {
+        HandlerList.unregisterAll(this);
         settings = null;
         replacementsYAML = null;
         monstersYAML = null;
@@ -160,11 +149,11 @@ public final class BeastPlugin extends FacePlugin {
         if (type == null) {
             return null;
         }
-        int i = StringConverter.toInt(spl[1]);
+        int i = NumberUtils.toInt(spl[1]);
         return new PotionEffect(type, 20 * 5, i);
     }
 
-    public FaceSettings getSettings() {
+    public MasterConfiguration getSettings() {
         return settings;
     }
 
