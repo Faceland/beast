@@ -22,7 +22,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.nunnerycode.facecore.configuration.MasterConfiguration;
-import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration;
 import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration.VersionUpdateType;
 import org.nunnerycode.facecore.configuration.VersionedSmartYamlConfiguration;
 import org.nunnerycode.facecore.plugin.FacePlugin;
@@ -42,7 +41,6 @@ public final class BeastPlugin extends FacePlugin {
     private VersionedSmartYamlConfiguration monstersYAML;
     private VersionedSmartYamlConfiguration replacementsYAML;
     private MasterConfiguration settings;
-    private BeastTask task;
 
     @Override
     public void enable() {
@@ -69,7 +67,7 @@ public final class BeastPlugin extends FacePlugin {
 
         settings = new MasterConfiguration();
 
-        task = new BeastTask(this);
+        BeastTask task = new BeastTask(this);
 
         settings.load(configYAML, replacementsYAML, monstersYAML);
 
