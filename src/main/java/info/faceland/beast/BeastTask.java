@@ -52,6 +52,9 @@ public final class BeastTask extends BukkitRunnable {
                 if (le.getCustomName() == null) {
                     continue;
                 }
+                if (data.getPotionEffectMap() == null) {
+                    return;
+                }
                 int level = NumberUtils.toInt(
                         CharMatcher.DIGIT.or(CharMatcher.is('-')).retainFrom(le.getCustomName()));
                 for (Map.Entry<Integer, List<PotionEffect>> entry : data.getPotionEffectMap().entrySet()) {
