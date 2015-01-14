@@ -15,6 +15,7 @@
 package info.faceland.beast;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -56,7 +57,7 @@ public final class BeastTask extends BukkitRunnable {
                     return;
                 }
                 int level = NumberUtils.toInt(
-                        CharMatcher.DIGIT.or(CharMatcher.is('-')).retainFrom(le.getCustomName()));
+                        CharMatcher.JAVA_LETTER.removeFrom(ChatColor.stripColor(le.getCustomName())));
                 for (Map.Entry<Integer, List<PotionEffect>> entry : data.getPotionEffectMap().entrySet()) {
                     if (level >= entry.getKey()) {
                         le.addPotionEffects(entry.getValue());
