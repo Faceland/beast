@@ -122,6 +122,9 @@ public final class BeastListener implements Listener {
             return;
         }
         double mult = 1D;
+        if (event.getEntity().getLastDamageCause() == null) {
+            return;
+        }
         EntityDamageEvent.DamageCause cause = event.getEntity().getLastDamageCause().getCause();
         if (cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             mult = 0.2D;
