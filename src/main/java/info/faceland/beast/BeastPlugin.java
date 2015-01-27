@@ -75,7 +75,7 @@ public final class BeastPlugin extends FacePlugin {
             if (!monstersYAML.isConfigurationSection(key)) {
                 continue;
             }
-            EntityType entityType = EntityType.fromName(key);
+            EntityType entityType = EntityType.valueOf(key);
             if (entityType == null) {
                 continue;
             }
