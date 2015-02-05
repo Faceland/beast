@@ -67,8 +67,6 @@ public final class BeastPlugin extends FacePlugin {
 
         settings = new MasterConfiguration();
 
-        BeastTask task = new BeastTask(this);
-
         settings.load(configYAML, replacementsYAML, monstersYAML);
 
         for (String key : monstersYAML.getKeys(false)) {
@@ -125,7 +123,6 @@ public final class BeastPlugin extends FacePlugin {
         }
 
         Bukkit.getPluginManager().registerEvents(new BeastListener(this), this);
-        task.runTaskTimer(this, 20L * 5, 20L * 5);
     }
 
     @Override
