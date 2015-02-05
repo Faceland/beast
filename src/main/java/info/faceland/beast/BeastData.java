@@ -29,6 +29,7 @@ public final class BeastData {
     private Expression healthExpression;
     private Expression experienceExpression;
     private Expression damageExpression;
+    private Expression speedExpression;
     private Map<Integer, List<PotionEffect>> potionEffectMap;
     private List<DropData> drops;
 
@@ -110,6 +111,14 @@ public final class BeastData {
         } else {
             this.drops = drops;
         }
+    }
+
+    public Expression getSpeedExpression() {
+        return speedExpression;
+    }
+
+    public void setSpeedExpression(Expression speedExpression) {
+        this.speedExpression = speedExpression;
     }
 
 }

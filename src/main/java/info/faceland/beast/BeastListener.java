@@ -29,16 +29,24 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.nunnerycode.facecore.reflect.ClassType;
+import org.nunnerycode.facecore.reflect.Mirror;
 import org.nunnerycode.facecore.utilities.TextUtils;
 import org.nunnerycode.kern.apache.commons.lang3.math.NumberUtils;
 import org.nunnerycode.kern.shade.google.common.base.CharMatcher;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Random;
+import java.util.UUID;
 
 public final class BeastListener implements Listener {
 
     private final BeastPlugin plugin;
     private final Random random;
+    private static final UUID MOVEMENT_SPEED_UUID = UUID.randomUUID();
 
     public BeastListener(BeastPlugin plugin) {
         this.plugin = plugin;
@@ -51,7 +59,7 @@ public final class BeastListener implements Listener {
             event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             return;
         }
-        final EntityType replacementType = EntityType.fromName(
+        final EntityType replacementType = EntityType.valueOf(
                 plugin.getSettings().getString("replacements." + event.getEntity().getType().name() + "." +
                                                event.getLocation().getBlock().getBiome().name(),
                                                event.getEntity().getType().name()));
@@ -99,11 +107,28 @@ public final class BeastListener implements Listener {
                 data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}})));
         double currentMaxHealth = event.getEntity().getMaxHealth();
         double newMaxHealth = data.getHealthExpression().setVariable("LEVEL", level).evaluate();
-        //event.getEntity().setCustomNameVisible(true);
+        double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
         event.getEntity().setHealth(Math.min(currentMaxHealth, newMaxHealth) / 2);
         event.getEntity().setMaxHealth(newMaxHealth);
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
         event.getEntity().setCanPickupItems(false);
+        // START REFLECTION MAGIC
+        try {
+            Object nmsEntity = Mirror.getMethod(event.getEntity().getClass(), "getHandle").invoke(event.getEntity());
+            Field movementSpeedAttribute = Mirror.getField(Mirror.getClass("GenericAttributes", ClassType.NMS), "d");
+            Object attributes = Mirror.getMethod(nmsEntity.getClass(), "getAttributeInstance", Mirror.getClass
+                    ("GenericAttributes", ClassType.NMS)).invoke(movementSpeedAttribute.get(nmsEntity));
+            Class<?> attributeModifierClazz = Mirror.getClass("AttributeModifier", ClassType.NMS);
+            Constructor<?> attributeModifierConstructor = attributeModifierClazz.getConstructor(UUID.class, String
+                    .class, double.class, int.class);
+            Object modifier = attributeModifierConstructor.newInstance(MOVEMENT_SPEED_UUID, "beast movement speed",
+                    speed, 1);
+            Mirror.getMethod(attributes.getClass(), "b", attributeModifierClazz).invoke(attributes, modifier);
+            Mirror.getMethod(attributes.getClass(), "a", attributeModifierClazz).invoke(attributes, modifier);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // END REFLECTION MAGIC
         if (event.getEntity() instanceof Wolf) {
             ((Wolf) event.getEntity()).setAngry(true);
         }
