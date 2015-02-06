@@ -116,8 +116,9 @@ public final class BeastListener implements Listener {
         try {
             Object nmsEntity = Mirror.getMethod(event.getEntity().getClass(), "getHandle").invoke(event.getEntity());
             Field movementSpeedAttribute = Mirror.getField(Mirror.getClass("GenericAttributes", ClassType.NMS), "d");
-            Object attributes = Mirror.getMethod(nmsEntity.getClass(), "getAttributeInstance", Mirror.getClass
-                    ("GenericAttributes", ClassType.NMS)).invoke(movementSpeedAttribute.get(nmsEntity));
+            Class<?> iAttributeClazz = Mirror.getClass("IAttribute", ClassType.NMS);
+            Object attributes = Mirror.getMethod(nmsEntity.getClass(), "getAttributeInstance", iAttributeClazz).invoke
+                    (movementSpeedAttribute.get(null));
             Class<?> attributeModifierClazz = Mirror.getClass("AttributeModifier", ClassType.NMS);
             Constructor<?> attributeModifierConstructor = attributeModifierClazz.getConstructor(UUID.class, String
                     .class, double.class, int.class);
