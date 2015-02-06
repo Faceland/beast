@@ -83,9 +83,11 @@ public final class BeastPlugin extends FacePlugin {
             String healthExpStr = cs.getString("health");
             String damageExpStr = cs.getString("damage");
             String experienceExpStr = cs.getString("experience");
+            String movementSpeedExpStr = cs.getString("movement-speed");
             data.setHealthExpression(new ExpressionBuilder(healthExpStr).variables("LEVEL").build());
             data.setDamageExpression(new ExpressionBuilder(damageExpStr).variables("LEVEL").build());
             data.setExperienceExpression(new ExpressionBuilder(experienceExpStr).variables("LEVEL").build());
+            data.setSpeedExpression(new ExpressionBuilder(movementSpeedExpStr).variables("LEVEL").build());
             if (cs.isConfigurationSection("potion-effects")) {
                 Map<Integer, List<PotionEffect>> effects = new HashMap<>();
                 ConfigurationSection peCS = cs.getConfigurationSection("potion-effects");
