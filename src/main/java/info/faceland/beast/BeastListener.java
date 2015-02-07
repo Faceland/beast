@@ -29,6 +29,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.nunnerycode.facecore.reflect.ClassType;
 import org.nunnerycode.facecore.reflect.Mirror;
 import org.nunnerycode.facecore.utilities.TextUtils;
@@ -112,24 +114,8 @@ public final class BeastListener implements Listener {
         event.getEntity().setMaxHealth(newMaxHealth);
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
         event.getEntity().setCanPickupItems(false);
-        // START REFLECTION MAGIC
-        try {
-            Object nmsEntity = Mirror.getMethod(event.getEntity().getClass(), "getHandle").invoke(event.getEntity());
-            Field movementSpeedAttribute = Mirror.getField(Mirror.getClass("GenericAttributes", ClassType.NMS), "d");
-            Class<?> iAttributeClazz = Mirror.getClass("IAttribute", ClassType.NMS);
-            Object attributes = Mirror.getMethod(nmsEntity.getClass(), "getAttributeInstance", iAttributeClazz).invoke
-                    (movementSpeedAttribute.get(null));
-            Class<?> attributeModifierClazz = Mirror.getClass("AttributeModifier", ClassType.NMS);
-            Constructor<?> attributeModifierConstructor = attributeModifierClazz.getConstructor(UUID.class, String
-                    .class, double.class, int.class);
-            Object modifier = attributeModifierConstructor.newInstance(MOVEMENT_SPEED_UUID, "beast movement speed",
-                    speed, 1);
-            Mirror.getMethod(attributes.getClass(), "b", attributeModifierClazz).invoke(attributes, modifier);
-            Mirror.getMethod(attributes.getClass(), "a", attributeModifierClazz).invoke(attributes, modifier);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // END REFLECTION MAGIC
+        event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, (int) Math.ceil(speed),
+                false, false));
         if (event.getEntity() instanceof Wolf) {
             ((Wolf) event.getEntity()).setAngry(true);
         }
