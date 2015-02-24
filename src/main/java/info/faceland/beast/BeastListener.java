@@ -100,8 +100,8 @@ public final class BeastListener implements Listener {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             level += 10;
         }
-        event.getEntity().setCustomName(ChatColor.DARK_RED + "Spawned " + TextUtils.color(TextUtils.args(
-                data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}})));
+        event.getEntity().setCustomName(TextUtils.color(TextUtils.args(
+                data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}})) + "*");
         double currentMaxHealth = event.getEntity().getMaxHealth();
         double newMaxHealth = data.getHealthExpression().setVariable("LEVEL", level).evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
@@ -136,7 +136,7 @@ public final class BeastListener implements Listener {
         if (cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             mult *= 0.2D;
         }
-        if (event.getEntity().getCustomName().startsWith(ChatColor.RED + "Spawned ")) {
+        if (event.getEntity().getCustomName().endsWith("*")) {
             mult *= (1D/3D);
         }
         int level = NumberUtils.toInt(
