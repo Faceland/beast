@@ -36,13 +36,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
-import java.util.UUID;
 
 public final class BeastListener implements Listener {
 
     private final BeastPlugin plugin;
     private final Random random;
-    private static final UUID MOVEMENT_SPEED_UUID = UUID.randomUUID();
 
     public BeastListener(BeastPlugin plugin) {
         this.plugin = plugin;
@@ -74,7 +72,7 @@ public final class BeastListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
         BeastData data = plugin.getData(event.getEntity().getType());
-        if (data == null || event.isCancelled() || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+        if (data == null || event.isCancelled()) {
             return;
         }
         int startingLevel =
@@ -99,7 +97,10 @@ public final class BeastListener implements Listener {
         double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                                                  ".distance-per-level", 150);
         int level = (int) (startingLevel + distanceFromSpawn / pow);
-        event.getEntity().setCustomName(TextUtils.color(TextUtils.args(
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+            level += 10;
+        }
+        event.getEntity().setCustomName(ChatColor.DARK_RED + "Spawned " + TextUtils.color(TextUtils.args(
                 data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}})));
         double currentMaxHealth = event.getEntity().getMaxHealth();
         double newMaxHealth = data.getHealthExpression().setVariable("LEVEL", level).evaluate();
@@ -108,7 +109,7 @@ public final class BeastListener implements Listener {
         event.getEntity().setMaxHealth(newMaxHealth);
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
         event.getEntity().setCanPickupItems(false);
-        event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, (int) Math.ceil(speed),
+        event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, (int) speed,
                 false, false));
         if (event.getEntity() instanceof Wolf) {
             ((Wolf) event.getEntity()).setAngry(true);
@@ -133,7 +134,10 @@ public final class BeastListener implements Listener {
         }
         EntityDamageEvent.DamageCause cause = event.getEntity().getLastDamageCause().getCause();
         if (cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            mult = 0.2D;
+            mult *= 0.2D;
+        }
+        if (event.getEntity().getCustomName().startsWith(ChatColor.RED + "Spawned ")) {
+            mult *= (1D/3D);
         }
         int level = NumberUtils.toInt(
                 CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
