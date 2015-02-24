@@ -14,6 +14,12 @@
  */
 package info.faceland.beast;
 
+import com.tealcube.minecraft.bukkit.facecore.plugin.FacePlugin;
+import com.tealcube.minecraft.bukkit.facecore.shade.config.MasterConfiguration;
+import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartConfiguration;
+import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartYamlConfiguration;
+import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
+import com.tealcube.minecraft.bukkit.kern.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,12 +27,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.HandlerList;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.nunnerycode.facecore.configuration.MasterConfiguration;
-import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration.VersionUpdateType;
-import org.nunnerycode.facecore.configuration.VersionedSmartYamlConfiguration;
-import org.nunnerycode.facecore.plugin.FacePlugin;
-import org.nunnerycode.kern.apache.commons.lang3.math.NumberUtils;
-import org.nunnerycode.kern.objecthunter.exp4j.ExpressionBuilder;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,19 +48,19 @@ public final class BeastPlugin extends FacePlugin {
 
         configYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "config.yml"),
                 getResource("config.yml"),
-                VersionUpdateType.BACKUP_AND_UPDATE);
+                VersionedSmartConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
         if (configYAML.update()) {
             getLogger().info("Updating config.yml");
         }
         monstersYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "monsters.yml"),
                 getResource("monsters.yml"),
-                VersionUpdateType.BACKUP_AND_UPDATE);
+                VersionedSmartConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
         if (monstersYAML.update()) {
             getLogger().info("Updating monsters.yml");
         }
         replacementsYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "replacements.yml"),
                 getResource("replacements.yml"),
-                VersionUpdateType.BACKUP_AND_UPDATE);
+                VersionedSmartConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
         if (replacementsYAML.update()) {
             getLogger().info("Updating replacements.yml");
         }

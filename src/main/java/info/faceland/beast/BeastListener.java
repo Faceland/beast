@@ -14,6 +14,9 @@
  */
 package info.faceland.beast;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
+import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.CharMatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -31,16 +34,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.nunnerycode.facecore.reflect.ClassType;
-import org.nunnerycode.facecore.reflect.Mirror;
-import org.nunnerycode.facecore.utilities.TextUtils;
-import org.nunnerycode.kern.apache.commons.lang3.math.NumberUtils;
-import org.nunnerycode.kern.shade.google.common.base.CharMatcher;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Random;
 import java.util.UUID;
 

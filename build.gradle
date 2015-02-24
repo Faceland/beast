@@ -3,7 +3,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id "com.github.hierynomus.license" version "0.11.0"
     id "java"
-    id "maven"
     id "maven-publish"
     id "wrapper"
 }
@@ -12,17 +11,14 @@ sourceCompatibility = "1.7"
 
 defaultTasks 'clean', 'licenseFormat', 'check', 'build'
 
-group = "org.nunnerycode"
-archivesBaseName = "beast-gradle"
-version = "0.0.1-SNAPSHOT"
+group = "com.tealcube.minecraft.bukkit"
+archivesBaseName = "beast"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
     maven {
-        url "http://repo-topplethenun.rhcloud.com/nexus/content/groups/public/"
-    }
-    maven {
-        url "http://nexus.theyeticave.net/content/repositories/pub_releases"
+        url "http://tealcube.com/nexus/content/groups/public/"
     }
     maven {
         url "https://hub.spigotmc.org/nexus/content/groups/public/"
@@ -30,12 +26,12 @@ repositories {
 }
 
 dependencies {
-    compile "org.nunnerycode:facecore-gradle-all:0.0.3-SNAPSHOT"
+    compile "com.tealcube.minecraft.bukkit:facecore-all:1.0.0-SNAPSHOT"
 }
 
 processResources {
     filter ReplaceTokens, tokens: [
-            VERSION: version + "-" + (System.getenv("CIRCLECI") != null ? "circleci" : "compiled") + "-" + (System.getenv("CIRCLE_BUILD_NUM") ?: "0"),
+            VERSION: version + "-" + (System.getenv("bambooo.planKey") ?: "compiled") + "-" + (System.getenv("bamboo.buildNumber") ?: "0"),
             NAME   : project.name
     ]
 }
@@ -52,13 +48,13 @@ license {
 publishing {
     publications {
         java(MavenPublication) {
-            artifactId = "beast-gradle"
+            artifactId = "beast"
             from components.java
         }
     }
     repositories {
         maven {
-            url "http://repo-topplethenun.rhcloud.com/nexus/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'}/"
+            url "http://tealcube.com/nexus/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'}/"
             name "nunnerycode-repo"
             credentials {
                 username System.getenv("nexusUsername") ?: nexusUsername

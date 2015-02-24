@@ -14,9 +14,9 @@
  */
 package info.faceland.beast;
 
+import com.tealcube.minecraft.bukkit.kern.objecthunter.exp4j.Expression;
 import org.bukkit.entity.EntityType;
 import org.bukkit.potion.PotionEffect;
-import org.nunnerycode.kern.objecthunter.exp4j.Expression;
 
 import java.util.ArrayList;
 import java.util.List;
