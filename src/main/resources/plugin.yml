@@ -1,4 +1,4 @@
 name: @NAME@
 version: @VERSION@
 main: info.faceland.beast.BeastPlugin
-depend: [facecore]
+depend: [Facecore]
