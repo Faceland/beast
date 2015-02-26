@@ -97,11 +97,13 @@ public final class BeastListener implements Listener {
         double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                                                  ".distance-per-level", 150);
         int level = (int) (startingLevel + distanceFromSpawn / pow);
+        String name = TextUtils.color(TextUtils.args(
+                data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}}));
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             level += 10;
+            name += "*";
         }
-        event.getEntity().setCustomName(TextUtils.color(TextUtils.args(
-                data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}})) + "*");
+        event.getEntity().setCustomName(name);
         double currentMaxHealth = event.getEntity().getMaxHealth();
         double newMaxHealth = data.getHealthExpression().setVariable("LEVEL", level).evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
