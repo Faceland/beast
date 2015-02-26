@@ -1,3 +1,4 @@
 version: "0.0.1"
 ZOMBIE:
   DESERT: SKELETON
+  OCEAN: PIG_ZOMBIE
