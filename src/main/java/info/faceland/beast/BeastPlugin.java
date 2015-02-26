@@ -80,10 +80,10 @@ public final class BeastPlugin extends FacePlugin {
             ConfigurationSection cs = monstersYAML.getConfigurationSection(key);
             BeastData data = new BeastData(entityType);
             data.setNameFormat(cs.getString("name"));
-            String healthExpStr = cs.getString("health");
-            String damageExpStr = cs.getString("damage");
-            String experienceExpStr = cs.getString("experience");
-            String movementSpeedExpStr = cs.getString("movement-speed");
+            String healthExpStr = cs.getString("health", "1");
+            String damageExpStr = cs.getString("damage", "1");
+            String experienceExpStr = cs.getString("experience", "1");
+            String movementSpeedExpStr = cs.getString("movement-speed", "1");
             data.setHealthExpression(new ExpressionBuilder(healthExpStr).variables("LEVEL").build());
             data.setDamageExpression(new ExpressionBuilder(damageExpStr).variables("LEVEL").build());
             data.setExperienceExpression(new ExpressionBuilder(experienceExpStr).variables("LEVEL").build());
