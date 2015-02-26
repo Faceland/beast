@@ -31,7 +31,7 @@ dependencies {
 
 processResources {
     filter ReplaceTokens, tokens: [
-            VERSION: version + "-" + (System.getenv("bambooo.planKey") ?: "compiled") + "-" + (System.getenv("bamboo.buildNumber") ?: "0"),
+            VERSION: version + "-" + (System.getenv("BUILD_NUMBER") ?: "0"),
             NAME   : project.name
     ]
 }
