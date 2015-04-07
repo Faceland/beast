@@ -80,7 +80,7 @@ public final class BeastListener implements Listener {
                 @Override
                 public void run() {
                     for (int i = 0; i < subdata.getAmount(); i++) {
-                        event.getLocation().getWorld().spawnEntity(event.getLocation(), subdata.getEntityType());
+                        subdata.spawnAtLocation(event.getLocation());
                     }
                 }
             });
