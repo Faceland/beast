@@ -44,13 +44,13 @@ public final class ReplacementData {
         return this;
     }
 
-    public List<SubReplacementData> setSubReplacementData(int level, String data) {
+    public ReplacementData setSubReplacementData(int level, String data) {
         List<SubReplacementData> datas = new ArrayList<>();
         List<String> subsets = Splitter.on(";").trimResults().omitEmptyStrings().splitToList(data);
         for (String subset : subsets) {
             datas.add(SubReplacementData.fromString(subset));
         }
-        return datas;
+        return setSubReplacementData(level, datas);
     }
 
     public SubReplacementData getRandomSubReplacementData(int level, Random random) {
