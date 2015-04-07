@@ -20,8 +20,11 @@ import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartConfigu
 import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartYamlConfiguration;
 import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.kern.objecthunter.exp4j.ExpressionBuilder;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.collect.HashBasedTable;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.collect.Table;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -38,6 +41,7 @@ import java.util.Map;
 public final class BeastPlugin extends FacePlugin {
 
     private Map<EntityType, BeastData> beastDataMap;
+    private Table<EntityType, Biome, ReplacementData> replacementDataTable;
     private VersionedSmartYamlConfiguration configYAML;
     private VersionedSmartYamlConfiguration monstersYAML;
     private VersionedSmartYamlConfiguration replacementsYAML;
@@ -46,6 +50,7 @@ public final class BeastPlugin extends FacePlugin {
     @Override
     public void enable() {
         beastDataMap = new HashMap<>();
+        replacementDataTable = HashBasedTable.create();
 
         configYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "config.yml"),
                 getResource("config.yml"),
@@ -138,6 +143,23 @@ public final class BeastPlugin extends FacePlugin {
             }
             beastDataMap.put(entityType, data);
         }
+        for (String entityKey : replacementsYAML.getKeys(false)) {
+            if (!replacementsYAML.isConfigurationSection(entityKey)) {
+                continue;
+            }
+            EntityType entityType = EntityType.valueOf(entityKey);
+            ConfigurationSection entitySection = replacementsYAML.getConfigurationSection(entityKey);
+            for (String biomeKey : entitySection.getKeys(false)) {
+                Biome biome = Biome.valueOf(biomeKey);
+                ReplacementData data = new ReplacementData(entityType, biome);
+                ConfigurationSection biomeSection = entitySection.getConfigurationSection(biomeKey);
+                for (String levelKey : biomeSection.getKeys(false)) {
+                    int level = NumberUtils.toInt(levelKey);
+                    data.setSubReplacementData(level, biomeSection.getString(levelKey));
+                }
+                replacementDataTable.put(entityType, biome, data);
+            }
+        }
 
         Bukkit.getPluginManager().registerEvents(new BeastListener(this), this);
     }
@@ -176,4 +198,7 @@ public final class BeastPlugin extends FacePlugin {
         return null;
     }
 
+    public Table<EntityType, Biome, ReplacementData> getReplacementDataTable() {
+        return replacementDataTable;
+    }
 }
