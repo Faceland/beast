@@ -53,19 +53,38 @@ public final class BeastListener implements Listener {
             event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             return;
         }
-        final EntityType replacementType = EntityType.valueOf(
-                plugin.getSettings().getString("replacements." + event.getEntity().getType().name() + "." +
-                                               event.getLocation().getBlock().getBiome().name(),
-                                               event.getEntity().getType().name()));
-        if (replacementType == event.getEntity().getType() || replacementType == null) {
+        ReplacementData data = plugin.getReplacementDataTable().get(event.getEntity().getType(),
+                event.getLocation().getBlock().getBiome());
+        if (data == null) {
             return;
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                event.getLocation().getWorld().spawnEntity(event.getEntity().getLocation(), replacementType);
-            }
-        });
+        int startingLevel =
+                plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
+                        ".starting-level", -1);
+        if (startingLevel < 0) {
+            return;
+        }
+        Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
+        Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
+                event.getLocation().getWorld().getSpawnLocation().getZ());
+        double distanceFromSpawn = pos.distance(worldPos);
+        double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
+                ".distance-per-level", 150);
+        int level = (int) (startingLevel + distanceFromSpawn / pow);
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+            level += 10;
+        }
+        final ReplacementData.SubReplacementData subdata = data.getRandomSubReplacementData(level, random);
+        if (subdata != null) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < subdata.getAmount(); i++) {
+                        event.getLocation().getWorld().spawnEntity(event.getLocation(), subdata.getEntityType());
+                    }
+                }
+            });
+        }
         event.setCancelled(true);
     }
 
