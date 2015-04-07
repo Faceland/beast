@@ -125,7 +125,8 @@ public final class ReplacementData {
     }
 
     private static EntityType[] fromString(String string, String split) {
-        String[] splitter = string.split(split);
+        List<String> strings = Splitter.on(split).omitEmptyStrings().trimResults().splitToList(string);
+        String[] splitter = strings.toArray(new String[strings.size()]);
         EntityType[] types = new EntityType[splitter.length];
         for (int i = 0; i < splitter.length; i++) {
             types[i] = EntityType.valueOf(splitter[i]);
