@@ -1,4 +1,4 @@
-version: "0.0.6"
+version: "0.0.7"
 ZOMBIE:
   name: "<white>Lvl %level% Zombie"
   experience: 1 + (LEVEL * 2)
@@ -15,3 +15,8 @@ ZOMBIE:
       min-amount: 1
       max-amount: 5
       chance: 0.5
+      name: "<white>Wooden Sword"
+      lore:
+      - "<white>Lore yo"
+      enchantments:
+        DAMAGE_ALL: 1

@@ -14,7 +14,11 @@
  */
 package info.faceland.beast;
 
+import com.tealcube.minecraft.bukkit.facecore.shade.hilt.HiltItemStack;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+
+import java.util.*;
 
 public final class DropData {
 
@@ -22,44 +26,49 @@ public final class DropData {
     private int minimumAmount;
     private int maximumAmount;
     private double chance;
+    private String name;
+    private List<String> lore;
+    private Map<Enchantment, Integer> enchantmentMap;
 
-    public DropData(Material material, int minimumAmount, int maximumAmount, double chance) {
-        this.material = material;
-        this.minimumAmount = minimumAmount;
-        this.maximumAmount = maximumAmount;
-        this.chance = chance;
+    public DropData() {
+        this.lore = new ArrayList<>();
+        this.enchantmentMap = new HashMap<>();
     }
 
     public Material getMaterial() {
         return material;
     }
 
-    public void setMaterial(Material material) {
+    public DropData setMaterial(Material material) {
         this.material = material;
+        return this;
     }
 
     public int getMinimumAmount() {
         return minimumAmount;
     }
 
-    public void setMinimumAmount(int minimumAmount) {
+    public DropData setMinimumAmount(int minimumAmount) {
         this.minimumAmount = minimumAmount;
+        return this;
     }
 
     public int getMaximumAmount() {
         return maximumAmount;
     }
 
-    public void setMaximumAmount(int maximumAmount) {
+    public DropData setMaximumAmount(int maximumAmount) {
         this.maximumAmount = maximumAmount;
+        return this;
     }
 
     public double getChance() {
         return chance;
     }
 
-    public void setChance(double chance) {
+    public DropData setChance(double chance) {
         this.chance = chance;
+        return this;
     }
 
     @Override
@@ -86,7 +95,43 @@ public final class DropData {
         DropData dropData = (DropData) o;
 
         return Double.compare(dropData.chance, chance) == 0 && maximumAmount == dropData.maximumAmount &&
-               minimumAmount == dropData.minimumAmount && material == dropData.material;
+                minimumAmount == dropData.minimumAmount && material == dropData.material;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public DropData setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public List<String> getLore() {
+        return lore;
+    }
+
+    public DropData setLore(List<String> lore) {
+        this.lore = lore;
+        return this;
+    }
+
+    public Map<Enchantment, Integer> getEnchantmentMap() {
+        return enchantmentMap;
+    }
+
+    public DropData setEnchantmentMap(Map<Enchantment, Integer> enchantmentMap) {
+        this.enchantmentMap = enchantmentMap;
+        return this;
+    }
+
+    public HiltItemStack toItemStack(Random random) {
+        HiltItemStack hiltItemStack = new HiltItemStack(material);
+        hiltItemStack.setName(name);
+        hiltItemStack.setLore(lore);
+        hiltItemStack.addUnsafeEnchantments(enchantmentMap);
+        hiltItemStack.setAmount((int) (random.nextDouble() * (maximumAmount - minimumAmount)) + minimumAmount);
+        return hiltItemStack;
     }
 
 }

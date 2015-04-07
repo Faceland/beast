@@ -23,6 +23,7 @@ import com.tealcube.minecraft.bukkit.kern.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.HandlerList;
 import org.bukkit.potion.PotionEffect;
@@ -112,8 +113,22 @@ public final class BeastPlugin extends FacePlugin {
                         continue;
                     }
                     ConfigurationSection inner = dCS.getConfigurationSection(k);
-                    DropData dropData = new DropData(Material.getMaterial(k), inner.getInt("min-amount"),
-                                                     inner.getInt("max-amount"), inner.getDouble("chance"));
+                    DropData dropData = new DropData();
+                    Material material = Material.getMaterial(k);
+                    int minimumAmount = inner.getInt("minimum-amount");
+                    int maximumAmount = inner.getInt("maximum-amount");
+                    double chance = inner.getDouble("chance");
+                    String name = inner.getString("name");
+                    List<String> lore = inner.getStringList("lore");
+                    Map<Enchantment, Integer> enchantmentMap = new HashMap<>();
+                    if (inner.isConfigurationSection("enchantments")) {
+                        ConfigurationSection enchants = inner.getConfigurationSection("enchantments");
+                        for (String s : enchants.getKeys(false)) {
+                            enchantmentMap.put(Enchantment.getByName(s), enchants.getInt(s));
+                        }
+                    }
+                    dropData.setMaterial(material).setMinimumAmount(minimumAmount).setMaximumAmount(maximumAmount)
+                            .setChance(chance).setName(name).setLore(lore).setEnchantmentMap(enchantmentMap);
                     if (dropData.getMaterial() == Material.AIR) {
                         continue;
                     }
