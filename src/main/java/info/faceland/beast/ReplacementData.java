@@ -109,6 +109,9 @@ public final class ReplacementData {
                 for (EntityType anEntityType : entityType) {
                     LivingEntity current = (LivingEntity) location.getWorld().spawnEntity(location, anEntityType);
                     if (current != null && previous != null) {
+                        if (current.getType() == previous.getType()) {
+                            break;
+                        }
                         current.setPassenger(previous);
                     }
                     previous = current;
