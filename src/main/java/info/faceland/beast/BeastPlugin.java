@@ -161,6 +161,8 @@ public final class BeastPlugin extends FacePlugin {
             }
         }
 
+        new BeastRunnable(this).runTaskTimer(this, 20L, 20L * 30);
+
         Bukkit.getPluginManager().registerEvents(new BeastListener(this), this);
     }
 
@@ -201,4 +203,5 @@ public final class BeastPlugin extends FacePlugin {
     public Table<EntityType, Biome, ReplacementData> getReplacementDataTable() {
         return replacementDataTable;
     }
+
 }

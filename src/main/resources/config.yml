@@ -1,6 +1,10 @@
-version: "0.0.1"
+version: "0.0.2"
 give-skeletons-sword-chance: 0.1
 enabled-worlds:
   world:
     starting-level: 3
     distance-per-level: 150
+    ambient-spawn-limit: 50
+    monster-spawn-limit: 70
+    animal-spawn-limit: 50
+    wave-length: 2
