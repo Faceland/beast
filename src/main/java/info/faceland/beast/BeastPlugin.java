@@ -152,6 +152,9 @@ public final class BeastPlugin extends FacePlugin {
             for (String biomeKey : entitySection.getKeys(false)) {
                 Biome biome = Biome.valueOf(biomeKey);
                 ReplacementData data = new ReplacementData(entityType, biome);
+                if (!entitySection.isConfigurationSection(biomeKey)) {
+                    continue;
+                }
                 ConfigurationSection biomeSection = entitySection.getConfigurationSection(biomeKey);
                 for (String levelKey : biomeSection.getKeys(false)) {
                     int level = NumberUtils.toInt(levelKey);
