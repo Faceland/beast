@@ -161,7 +161,7 @@ public final class BeastPlugin extends FacePlugin {
             }
         }
 
-        new BeastRunnable(this).runTaskTimer(this, 20L, 20L * 30);
+        new BeastRunnable(this).runTaskTimer(this, 20L, 20L * 5);
 
         Bukkit.getPluginManager().registerEvents(new BeastListener(this), this);
     }
