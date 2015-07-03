@@ -14,10 +14,10 @@
  */
 package info.faceland.beast;
 
+import com.tealcube.minecraft.bukkit.config.MasterConfiguration;
+import com.tealcube.minecraft.bukkit.config.VersionedConfiguration;
+import com.tealcube.minecraft.bukkit.config.VersionedSmartYamlConfiguration;
 import com.tealcube.minecraft.bukkit.facecore.plugin.FacePlugin;
-import com.tealcube.minecraft.bukkit.facecore.shade.config.MasterConfiguration;
-import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartConfiguration;
-import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartYamlConfiguration;
 import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.kern.objecthunter.exp4j.ExpressionBuilder;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.collect.HashBasedTable;
@@ -54,19 +54,19 @@ public final class BeastPlugin extends FacePlugin {
 
         configYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "config.yml"),
                 getResource("config.yml"),
-                VersionedSmartConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
+                VersionedConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
         if (configYAML.update()) {
             getLogger().info("Updating config.yml");
         }
         monstersYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "monsters.yml"),
                 getResource("monsters.yml"),
-                VersionedSmartConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
+                VersionedConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
         if (monstersYAML.update()) {
             getLogger().info("Updating monsters.yml");
         }
         replacementsYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "replacements.yml"),
                 getResource("replacements.yml"),
-                VersionedSmartConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
+                VersionedConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
         if (replacementsYAML.update()) {
             getLogger().info("Updating replacements.yml");
         }
