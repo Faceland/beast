@@ -123,7 +123,7 @@ public final class BeastListener implements Listener {
         double distanceFromSpawn = pos.distance(worldPos);
         double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                                                  ".distance-per-level", 150);
-        int rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
+        double rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
         int rank = 0;
 
         int level = (int) (startingLevel + distanceFromSpawn / pow);
