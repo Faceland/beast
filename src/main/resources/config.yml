@@ -1,5 +1,6 @@
 version: "0.0.2"
 give-skeletons-sword-chance: 0.1
+mob-rankup-chance: 0.1
 enabled-worlds:
   world:
     starting-level: 3

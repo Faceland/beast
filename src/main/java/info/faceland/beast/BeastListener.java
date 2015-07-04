@@ -28,7 +28,6 @@ import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.CharMatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Wolf;
@@ -68,7 +67,7 @@ public final class BeastListener implements Listener {
         }
         int startingLevel =
                 plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
-                        ".starting-level", -1);
+                                            ".starting-level", -1);
         if (startingLevel < 0) {
             return;
         }
@@ -79,6 +78,7 @@ public final class BeastListener implements Listener {
         double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                 ".distance-per-level", 150);
         int level = (int) (startingLevel + distanceFromSpawn / pow);
+        level += random.nextInt(4) - 2;
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             level += 10;
         }
@@ -123,15 +123,53 @@ public final class BeastListener implements Listener {
         double distanceFromSpawn = pos.distance(worldPos);
         double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                                                  ".distance-per-level", 150);
+        int rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
+        int rank = 0;
+
         int level = (int) (startingLevel + distanceFromSpawn / pow);
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             level += 10;
+        } else {
+            boolean rankingUp = true;
+            while (rankingUp) {
+                rankingUp = false;
+                if (random.nextDouble() < rankUp && rank < 4) {
+                    rank++;
+                    rankingUp = true;
+                }
+            }
         }
+
+        String rankName = "";
+
+        switch (rank) {
+            case 0:
+                rankName = "";
+                break;
+            case 1:
+                rankName = ChatColor.BLUE + "[M]";
+                level += 10;
+                break;
+            case 2:
+                rankName = ChatColor.DARK_PURPLE + "[R]";
+                level += 20;
+                break;
+            case 3:
+                rankName = ChatColor.RED + "[E]";
+                level += 30;
+                break;
+            case 4:
+                rankName = ChatColor.GOLD + "[L]";
+                level += 30 + level;
+                break;
+        }
+
         String name = TextUtils.color(TextUtils.args(
-                data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}}));
+                data.getNameFormat(), new String[][]{{rankName + "%level%", String.valueOf(level)}}));
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             name += "*";
         }
+
         event.getEntity().setCustomName(name);
         double currentMaxHealth = event.getEntity().getMaxHealth();
         double newMaxHealth = data.getHealthExpression().setVariable("LEVEL", level).evaluate();
