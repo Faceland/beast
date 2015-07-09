@@ -25,6 +25,7 @@ package info.faceland.beast;
 import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.CharMatcher;
+import org.bukkit.entity.EntityType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -129,6 +130,9 @@ public final class BeastListener implements Listener {
         int rank = 0;
 
         int level = (int) (startingLevel + distanceFromSpawn / pow);
+        level += -2 + random.nextInt(5);
+        level = Math.max(level, 1);
+
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             level += 10;
         } else {
@@ -182,7 +186,7 @@ public final class BeastListener implements Listener {
         event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, (int) speed,
                 false, false));
         if (event.getEntity() instanceof Wolf) {
-            ((Wolf) event.getEntity()).setAngry(true);
+            ((Wolf)event.getEntity()).setAngry(true);
         }
     }
 
