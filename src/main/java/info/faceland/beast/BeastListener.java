@@ -79,10 +79,12 @@ public final class BeastListener implements Listener {
         double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                 ".distance-per-level", 150);
         int level = (int) (startingLevel + distanceFromSpawn / pow);
-        level += random.nextInt(4) - 2;
+        level += -2 + random.nextInt(5);
+        level = Math.max(level, 1);
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             level += 10;
         }
+
         final ReplacementData.SubReplacementData subdata = data.getRandomSubReplacementData(level, random);
         if (subdata != null) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -172,7 +174,7 @@ public final class BeastListener implements Listener {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             name += "*";
         } else {
-            name = rankName + name;
+            name = rankName + " " + name + " " + rankName;
         }
 
         event.getEntity().setCustomName(name);
