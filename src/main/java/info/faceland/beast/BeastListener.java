@@ -55,49 +55,49 @@ public final class BeastListener implements Listener {
         this.random = new Random(System.currentTimeMillis());
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onCreatureSpawnLowest(final CreatureSpawnEvent event) {
-        if (event.isCancelled() || !(event.getEntity() instanceof Monster) ||
-            event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
-            return;
-        }
-        ReplacementData data = plugin.getReplacementDataTable().get(event.getEntity().getType(),
-                event.getLocation().getBlock().getBiome());
-        if (data == null) {
-            return;
-        }
-        int startingLevel =
-                plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
-                                            ".starting-level", -1);
-        if (startingLevel < 0) {
-            return;
-        }
-        Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
-        Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
-                event.getLocation().getWorld().getSpawnLocation().getZ());
-        double distanceFromSpawn = pos.distance(worldPos);
-        double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
-                ".distance-per-level", 150);
-        int level = (int) (startingLevel + distanceFromSpawn / pow);
-        level += -2 + random.nextInt(5);
-        level = Math.max(level, 1);
-        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
-            level += 10;
-        }
-
-        final ReplacementData.SubReplacementData subdata = data.getRandomSubReplacementData(level, random);
-        if (subdata != null) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < subdata.getAmount(); i++) {
-                        subdata.spawnAtLocation(event.getLocation());
-                    }
-                }
-            });
-        }
-        event.setCancelled(true);
-    }
+    //@EventHandler(priority = EventPriority.LOWEST)
+    //public void onCreatureSpawnLowest(final CreatureSpawnEvent event) {
+    //    if (event.isCancelled() || !(event.getEntity() instanceof Monster) ||
+    //        event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+    //        return;
+    //    }
+    //    ReplacementData data = plugin.getReplacementDataTable().get(event.getEntity().getType(),
+    //            event.getLocation().getBlock().getBiome());
+    //    if (data == null) {
+    //        return;
+    //    }
+    //    int startingLevel =
+    //            plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
+    //                                        ".starting-level", -1);
+    //    if (startingLevel < 0) {
+    //        return;
+    //    }
+    //    Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
+    //    Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
+    //            event.getLocation().getWorld().getSpawnLocation().getZ());
+    //    double distanceFromSpawn = pos.distance(worldPos);
+    //    double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
+    //            ".distance-per-level", 150);
+    //    int level = (int) (startingLevel + distanceFromSpawn / pow);
+    //    level += -2 + random.nextInt(5);
+    //    level = Math.max(level, 1);
+    //    if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+    //        level += 10;
+    //    }
+//
+    //    final ReplacementData.SubReplacementData subdata = data.getRandomSubReplacementData(level, random);
+    //    if (subdata != null) {
+    //        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+    //            @Override
+    //            public void run() {
+    //                for (int i = 0; i < subdata.getAmount(); i++) {
+    //                    subdata.spawnAtLocation(event.getLocation());
+    //                }
+    //            }
+    //        });
+    //    }
+    //    event.setCancelled(true);
+    //}
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
