@@ -102,9 +102,10 @@ public final class BeastListener implements Listener {
         if (data == null || event.isCancelled()) {
             return;
         }
-        int startingLevel =
-                plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
-                                            ".starting-level", -1);
+
+        int startingLevel = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld()
+            .getName() + ".starting-level", -1);
+
         if (startingLevel < 0) {
             return;
         }
@@ -124,6 +125,7 @@ public final class BeastListener implements Listener {
         double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                                                  ".distance-per-level", 150);
         double rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
+        String rankName = "";
         int rank = 0;
 
         int level = (int) (startingLevel + distanceFromSpawn / pow);
@@ -138,36 +140,35 @@ public final class BeastListener implements Listener {
                     rankingUp = true;
                 }
             }
-        }
-
-        String rankName = "";
-
-        switch (rank) {
-            case 0:
-                rankName = "";
-                break;
-            case 1:
-                rankName = ChatColor.BLUE + "[M]";
-                level += 10;
-                break;
-            case 2:
-                rankName = ChatColor.DARK_PURPLE + "[R]";
-                level += 20;
-                break;
-            case 3:
-                rankName = ChatColor.RED + "[E]";
-                level += 30;
-                break;
-            case 4:
-                rankName = ChatColor.GOLD + "[L]";
-                level += 30 + level;
-                break;
+            switch (rank) {
+                case 0:
+                    rankName = "";
+                    break;
+                case 1:
+                    rankName = ChatColor.BLUE + "[M]";
+                    level += 10;
+                    break;
+                case 2:
+                    rankName = ChatColor.DARK_PURPLE + "[R]";
+                    level += 20;
+                    break;
+                case 3:
+                    rankName = ChatColor.RED + "[E]";
+                    level += 30;
+                    break;
+                case 4:
+                    rankName = ChatColor.GOLD + "[L]";
+                    level += 30 + level;
+                    break;
+            }
         }
 
         String name = TextUtils.color(TextUtils.args(
-                data.getNameFormat(), new String[][]{{rankName + "%level%", String.valueOf(level)}}));
+                data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}}));
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             name += "*";
+        } else {
+            name = rankName + name;
         }
 
         event.getEntity().setCustomName(name);
