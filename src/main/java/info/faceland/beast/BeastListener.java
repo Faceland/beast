@@ -192,13 +192,16 @@ public final class BeastListener implements Listener {
         }
         BeastData data = plugin.getData(event.getEntityType());
         if (data == null) {
+            plugin.getLogger().info("data is null");
             return;
         }
         if (event.getEntity().getCustomName() == null) {
+            plugin.getLogger().info("custom name is null");
             return;
         }
         double mult = 1D;
         if (event.getEntity().getLastDamageCause() == null) {
+            plugin.getLogger().info("last damage cause is null");
             return;
         }
         EntityDamageEvent.DamageCause cause = event.getEntity().getLastDamageCause().getCause();
@@ -212,6 +215,7 @@ public final class BeastListener implements Listener {
                 CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
         event.setDroppedExp((int) (data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * mult));
         if (data.getDrops().isEmpty()) {
+            plugin.getLogger().info("drops are empty");
             return;
         }
         event.getDrops().clear();
