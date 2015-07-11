@@ -25,6 +25,7 @@ package info.faceland.beast;
 import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.CharMatcher;
+import org.bukkit.entity.EntityType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -54,47 +55,49 @@ public final class BeastListener implements Listener {
         this.random = new Random(System.currentTimeMillis());
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onCreatureSpawnLowest(final CreatureSpawnEvent event) {
-        if (event.isCancelled() || !(event.getEntity() instanceof Monster) ||
-            event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
-            return;
-        }
-        ReplacementData data = plugin.getReplacementDataTable().get(event.getEntity().getType(),
-                event.getLocation().getBlock().getBiome());
-        if (data == null) {
-            return;
-        }
-        int startingLevel =
-                plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
-                                            ".starting-level", -1);
-        if (startingLevel < 0) {
-            return;
-        }
-        Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
-        Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
-                event.getLocation().getWorld().getSpawnLocation().getZ());
-        double distanceFromSpawn = pos.distance(worldPos);
-        double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
-                ".distance-per-level", 150);
-        int level = (int) (startingLevel + distanceFromSpawn / pow);
-        level += random.nextInt(4) - 2;
-        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
-            level += 10;
-        }
-        final ReplacementData.SubReplacementData subdata = data.getRandomSubReplacementData(level, random);
-        if (subdata != null) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < subdata.getAmount(); i++) {
-                        subdata.spawnAtLocation(event.getLocation());
-                    }
-                }
-            });
-        }
-        event.setCancelled(true);
-    }
+    //@EventHandler(priority = EventPriority.LOWEST)
+    //public void onCreatureSpawnLowest(final CreatureSpawnEvent event) {
+    //    if (event.isCancelled() || !(event.getEntity() instanceof Monster) ||
+    //        event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+    //        return;
+    //    }
+    //    ReplacementData data = plugin.getReplacementDataTable().get(event.getEntity().getType(),
+    //            event.getLocation().getBlock().getBiome());
+    //    if (data == null) {
+    //        return;
+    //    }
+    //    int startingLevel =
+    //            plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
+    //                                        ".starting-level", -1);
+    //    if (startingLevel < 0) {
+    //        return;
+    //    }
+    //    Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
+    //    Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
+    //            event.getLocation().getWorld().getSpawnLocation().getZ());
+    //    double distanceFromSpawn = pos.distance(worldPos);
+    //    double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
+    //            ".distance-per-level", 150);
+    //    int level = (int) (startingLevel + distanceFromSpawn / pow);
+    //    level += -2 + random.nextInt(5);
+    //    level = Math.max(level, 1);
+    //    if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+    //        level += 10;
+    //    }
+//
+    //    final ReplacementData.SubReplacementData subdata = data.getRandomSubReplacementData(level, random);
+    //    if (subdata != null) {
+    //        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+    //            @Override
+    //            public void run() {
+    //                for (int i = 0; i < subdata.getAmount(); i++) {
+    //                    subdata.spawnAtLocation(event.getLocation());
+    //                }
+    //            }
+    //        });
+    //    }
+    //    event.setCancelled(true);
+    //}
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
@@ -102,9 +105,10 @@ public final class BeastListener implements Listener {
         if (data == null || event.isCancelled()) {
             return;
         }
-        int startingLevel =
-                plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
-                                            ".starting-level", -1);
+
+        int startingLevel = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld()
+            .getName() + ".starting-level", -1);
+
         if (startingLevel < 0) {
             return;
         }
@@ -124,9 +128,13 @@ public final class BeastListener implements Listener {
         double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
                                                  ".distance-per-level", 150);
         double rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
+        String rankName = "";
         int rank = 0;
 
         int level = (int) (startingLevel + distanceFromSpawn / pow);
+        level += -2 + random.nextInt(5);
+        level = Math.max(level, 1);
+
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             level += 10;
         } else {
@@ -138,36 +146,35 @@ public final class BeastListener implements Listener {
                     rankingUp = true;
                 }
             }
-        }
-
-        String rankName = "";
-
-        switch (rank) {
-            case 0:
-                rankName = "";
-                break;
-            case 1:
-                rankName = ChatColor.BLUE + "[M]";
-                level += 10;
-                break;
-            case 2:
-                rankName = ChatColor.DARK_PURPLE + "[R]";
-                level += 20;
-                break;
-            case 3:
-                rankName = ChatColor.RED + "[E]";
-                level += 30;
-                break;
-            case 4:
-                rankName = ChatColor.GOLD + "[L]";
-                level += 30 + level;
-                break;
+            switch (rank) {
+                case 0:
+                    rankName = "";
+                    break;
+                case 1:
+                    rankName = ChatColor.BLUE + "[M]";
+                    level += 10;
+                    break;
+                case 2:
+                    rankName = ChatColor.DARK_PURPLE + "[R]";
+                    level += 20;
+                    break;
+                case 3:
+                    rankName = ChatColor.RED + "[E]";
+                    level += 30;
+                    break;
+                case 4:
+                    rankName = ChatColor.GOLD + "[L]";
+                    level += 30 + level;
+                    break;
+            }
         }
 
         String name = TextUtils.color(TextUtils.args(
-                data.getNameFormat(), new String[][]{{rankName + "%level%", String.valueOf(level)}}));
+                data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}}));
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             name += "*";
+        } else {
+            name = rankName + " " + name + " " + rankName;
         }
 
         event.getEntity().setCustomName(name);
@@ -181,7 +188,7 @@ public final class BeastListener implements Listener {
         event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, (int) speed,
                 false, false));
         if (event.getEntity() instanceof Wolf) {
-            ((Wolf) event.getEntity()).setAngry(true);
+            ((Wolf)event.getEntity()).setAngry(true);
         }
     }
 
