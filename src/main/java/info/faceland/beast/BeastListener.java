@@ -25,11 +25,8 @@ package info.faceland.beast;
 import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.CharMatcher;
-import org.bukkit.entity.EntityType;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
@@ -225,6 +222,7 @@ public final class BeastListener implements Listener {
             plugin.getLogger().info("drops are empty");
             return;
         }
+        plugin.getLogger().info("we started at the bottom now we here");
         event.getDrops().clear();
         for (DropData dropData : data.getDrops()) {
             if (random.nextDouble() < dropData.getChance()) {
