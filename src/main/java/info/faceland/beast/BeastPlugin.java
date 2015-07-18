@@ -142,6 +142,7 @@ public final class BeastPlugin extends FacePlugin {
                     }
                     dropData.setMaterial(material).setMinimumAmount(minimumAmount).setMaximumAmount(maximumAmount)
                             .setChance(chance).setName(name).setLore(lore).setEnchantmentMap(enchantmentMap);
+                    getLogger().info(entityType.name() + " : " + k + " : " + material);
                     if (dropData.getMaterial() == Material.AIR) {
                         continue;
                     }
