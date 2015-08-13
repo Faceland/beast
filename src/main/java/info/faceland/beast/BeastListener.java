@@ -118,6 +118,10 @@ public final class BeastListener implements Listener {
             }
             event.getEntity().getEquipment().setItemInHandDropChance(0f);
         }
+        if (event.getEntity() instanceof Wolf) {
+            Wolf wolf = (Wolf)event.getEntity();
+            wolf.setAngry(true);
+        }
         Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
         Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
                                  event.getLocation().getWorld().getSpawnLocation().getZ());
@@ -184,9 +188,6 @@ public final class BeastListener implements Listener {
         event.getEntity().setCanPickupItems(false);
         event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, (int) speed,
                 false, false));
-        if (event.getEntity() instanceof Wolf) {
-            ((Wolf)event.getEntity()).setAngry(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
