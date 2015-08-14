@@ -1,17 +1,17 @@
 /**
  * The MIT License
  * Copyright (c) 2015 Teal Cube Games
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,10 +26,10 @@ import com.tealcube.minecraft.bukkit.config.MasterConfiguration;
 import com.tealcube.minecraft.bukkit.config.VersionedConfiguration;
 import com.tealcube.minecraft.bukkit.config.VersionedSmartYamlConfiguration;
 import com.tealcube.minecraft.bukkit.facecore.plugin.FacePlugin;
-import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
-import com.tealcube.minecraft.bukkit.kern.objecthunter.exp4j.ExpressionBuilder;
-import com.tealcube.minecraft.bukkit.kern.shade.google.common.collect.HashBasedTable;
-import com.tealcube.minecraft.bukkit.kern.shade.google.common.collect.Table;
+import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
+import com.tealcube.minecraft.bukkit.shade.google.common.collect.HashBasedTable;
+import com.tealcube.minecraft.bukkit.shade.google.common.collect.Table;
+import com.tealcube.minecraft.bukkit.shade.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
