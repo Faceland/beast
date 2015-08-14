@@ -22,7 +22,7 @@
  */
 package info.faceland.beast;
 
-import com.tealcube.minecraft.bukkit.kern.objecthunter.exp4j.Expression;
+import com.tealcube.minecraft.bukkit.shade.objecthunter.exp4j.Expression;
 import org.bukkit.entity.EntityType;
 import org.bukkit.potion.PotionEffect;
 

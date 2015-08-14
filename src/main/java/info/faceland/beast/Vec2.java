@@ -22,7 +22,7 @@
  */
 package info.faceland.beast;
 
-public class Vec2{
+public class Vec2 {
 
     private double x;
     private double z;

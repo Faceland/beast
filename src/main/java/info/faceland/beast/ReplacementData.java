@@ -22,8 +22,8 @@
  */
 package info.faceland.beast;
 
-import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
-import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Splitter;
+import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
+import com.tealcube.minecraft.bukkit.shade.google.common.base.Splitter;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
@@ -37,14 +37,24 @@ public final class ReplacementData {
     private final Biome biome;
     private final Map<Integer, List<SubReplacementData>> subReplacementData;
 
-    public Map<Integer, List<SubReplacementData>> getSubReplacementData() {
-        return subReplacementData;
-    }
-
     public ReplacementData(EntityType entityType, Biome biome) {
         this.entityType = entityType;
         this.biome = biome;
         this.subReplacementData = new HashMap<>();
+    }
+
+    private static EntityType[] fromString(String string, String split) {
+        List<String> strings = Splitter.on(split).omitEmptyStrings().trimResults().splitToList(string);
+        String[] splitter = strings.toArray(new String[strings.size()]);
+        EntityType[] types = new EntityType[splitter.length];
+        for (int i = 0; i < splitter.length; i++) {
+            types[i] = EntityType.valueOf(splitter[i]);
+        }
+        return types;
+    }
+
+    public Map<Integer, List<SubReplacementData>> getSubReplacementData() {
+        return subReplacementData;
     }
 
     public ReplacementData setSubReplacementData(int level, List<SubReplacementData> datas) {
@@ -99,6 +109,13 @@ public final class ReplacementData {
             this.amount = amount;
         }
 
+        public static SubReplacementData fromString(String s) {
+            String[] splitOnPercent = s.split("%");
+            String[] splitOnColon = splitOnPercent[1].split(":");
+            return new SubReplacementData(NumberUtils.toDouble(splitOnPercent[0]) / 2,
+                    ReplacementData.fromString(splitOnColon[0], "|"), NumberUtils.toInt(splitOnColon[1]));
+        }
+
         public double getChance() {
             return chance;
         }
@@ -126,23 +143,6 @@ public final class ReplacementData {
                 }
             }
         }
-
-        public static SubReplacementData fromString(String s) {
-            String[] splitOnPercent = s.split("%");
-            String[] splitOnColon = splitOnPercent[1].split(":");
-            return new SubReplacementData(NumberUtils.toDouble(splitOnPercent[0]) / 2,
-                    ReplacementData.fromString(splitOnColon[0], "|"), NumberUtils.toInt(splitOnColon[1]));
-        }
-    }
-
-    private static EntityType[] fromString(String string, String split) {
-        List<String> strings = Splitter.on(split).omitEmptyStrings().trimResults().splitToList(string);
-        String[] splitter = strings.toArray(new String[strings.size()]);
-        EntityType[] types = new EntityType[splitter.length];
-        for (int i = 0; i < splitter.length; i++) {
-            types[i] = EntityType.valueOf(splitter[i]);
-        }
-        return types;
     }
 
 }
