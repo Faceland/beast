@@ -144,10 +144,9 @@ public final class BeastListener implements Listener {
         }
 
         event.getEntity().setCustomName(name);
-        double currentMaxHealth = event.getEntity().getMaxHealth();
         double newMaxHealth = data.getHealthExpression().setVariable("LEVEL", level).evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
-        event.getEntity().setHealth(Math.min(currentMaxHealth, newMaxHealth) / 2);
+        event.getEntity().setHealth(Math.min(2, newMaxHealth) / 2);
         event.getEntity().setMaxHealth(newMaxHealth);
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
         event.getEntity().setCanPickupItems(false);
@@ -167,6 +166,17 @@ public final class BeastListener implements Listener {
         if (event.getEntity().getCustomName() == null) {
             return;
         }
+        if (!data.getDrops().isEmpty()) {
+            event.getDrops().clear();
+            for (DropData dropData : data.getDrops()) {
+                if (random.nextDouble() < dropData.getChance()) {
+                    if (dropData.getMaterial() != Material.AIR) {
+                        continue;
+                    }
+                    event.getDrops().add(dropData.toItemStack(random));
+                }
+            }
+        }
         double mult = 1D;
         if (event.getEntity().getLastDamageCause() == null) {
             return;
@@ -181,17 +191,5 @@ public final class BeastListener implements Listener {
         int level = NumberUtils.toInt(
                 CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
         event.setDroppedExp((int) (data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * mult));
-        if (data.getDrops().isEmpty()) {
-            return;
-        }
-        event.getDrops().clear();
-        for (DropData dropData : data.getDrops()) {
-            if (random.nextDouble() < dropData.getChance()) {
-                if (dropData.getMaterial() == Material.AIR) {
-                    continue;
-                }
-                event.getDrops().add(dropData.toItemStack(random));
-            }
-        }
     }
 }
