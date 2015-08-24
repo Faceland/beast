@@ -168,18 +168,11 @@ public final class BeastListener implements Listener {
         if (event.getEntity().getCustomName() == null) {
             return;
         }
-        Bukkit.getLogger().info("Reached data drops");
         if (!data.getDrops().isEmpty()) {
-            Bukkit.getLogger().info("data drops is not empty");
             event.getDrops().clear();
-            Bukkit.getLogger().info("default drops cleared");
             for (DropData dropData : data.getDrops()) {
-                Bukkit.getLogger().info("Looping drops");
                 if (random.nextDouble() < dropData.getChance()) {
-                    Bukkit.getLogger().info("Data drop material: " + dropData.getMaterial().name());
-                    Bukkit.getLogger().info("Data drop chance: " + dropData.getChance());
                     event.getDrops().add(dropData.toItemStack(random));
-                    Bukkit.getLogger().info("ADDED!");
                 }
             }
         }
