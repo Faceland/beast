@@ -27,6 +27,7 @@ import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils
 import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
@@ -66,15 +67,23 @@ public final class BeastListener implements Listener {
             return;
         }
         event.getEntity().getEquipment().clear();
-        if (event.getEntity() instanceof Skeleton) {
+        if (event.getEntity() instanceof PigZombie) {
+            event.getEntity().getEquipment().setHelmet(new ItemStack(Material.GOLD_HELMET));
+            if (random.nextDouble() < 0.5) {
+                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.GOLD_AXE));
+            } else {
+                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD));
+            }
+            event.getEntity().getEquipment().setItemInHandDropChance(0f);
+            event.getEntity().getEquipment().setHelmetDropChance(0f);
+        } else if (event.getEntity() instanceof Skeleton) {
             if (random.nextDouble() < plugin.getSettings().getDouble("config.give-skeletons-sword-chance", 0.1)) {
                 event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.STONE_SWORD));
             } else {
                 event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.BOW));
             }
             event.getEntity().getEquipment().setItemInHandDropChance(0f);
-        }
-        if (event.getEntity() instanceof Wolf) {
+        } else if (event.getEntity() instanceof Wolf) {
             Wolf wolf = (Wolf) event.getEntity();
             wolf.setAngry(true);
         }
@@ -109,19 +118,19 @@ public final class BeastListener implements Listener {
                     break;
                 case 1:
                     rankName = ChatColor.BLUE + "[M]";
-                    level += 10;
+                    level += 5;
                     break;
                 case 2:
                     rankName = ChatColor.DARK_PURPLE + "[R]";
-                    level += 20;
+                    level += 10;
                     break;
                 case 3:
                     rankName = ChatColor.RED + "[E]";
-                    level += 30;
+                    level += 15;
                     break;
                 case 4:
                     rankName = ChatColor.GOLD + "[L]";
-                    level += 30 + level;
+                    level += 20;
                     break;
             }
         }
