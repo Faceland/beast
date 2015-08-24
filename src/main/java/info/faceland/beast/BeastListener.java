@@ -25,6 +25,8 @@ package info.faceland.beast;
 import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.PigZombie;
@@ -166,14 +168,18 @@ public final class BeastListener implements Listener {
         if (event.getEntity().getCustomName() == null) {
             return;
         }
+        Bukkit.getLogger().info("Reached data drops");
         if (!data.getDrops().isEmpty()) {
+            Bukkit.getLogger().info("data drops is not empty");
             event.getDrops().clear();
+            Bukkit.getLogger().info("default drops cleared");
             for (DropData dropData : data.getDrops()) {
+                Bukkit.getLogger().info("Looping drops");
                 if (random.nextDouble() < dropData.getChance()) {
-                    if (dropData.getMaterial() != Material.AIR) {
-                        continue;
-                    }
+                    Bukkit.getLogger().info("Data drop material: " + dropData.getMaterial().name());
+                    Bukkit.getLogger().info("Data drop chance: " + dropData.getChance());
                     event.getDrops().add(dropData.toItemStack(random));
+                    Bukkit.getLogger().info("ADDED!");
                 }
             }
         }
