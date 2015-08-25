@@ -169,9 +169,11 @@ public final class BeastListener implements Listener {
             return;
         }
         if (!data.getDrops().isEmpty()) {
+            plugin.getLogger().info("data.getDrops() is not empty");
             event.getDrops().clear();
             for (DropData dropData : data.getDrops()) {
                 if (random.nextDouble() < dropData.getChance()) {
+                    plugin.getLogger().info("adding drop to event.getDrops()");
                     event.getDrops().add(dropData.toItemStack(random));
                 }
             }
