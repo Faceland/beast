@@ -156,7 +156,7 @@ public final class BeastListener implements Listener {
                 false, false));
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDeathEvent(EntityDeathEvent event) {
         if (event instanceof PlayerDeathEvent) {
             return;
