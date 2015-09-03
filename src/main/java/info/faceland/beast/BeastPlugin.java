@@ -49,7 +49,6 @@ import java.util.Map;
 public final class BeastPlugin extends FacePlugin {
 
     private Map<EntityType, BeastData> beastDataMap;
-    private Table<EntityType, Biome, ReplacementData> replacementDataTable;
     private VersionedSmartYamlConfiguration configYAML;
     private VersionedSmartYamlConfiguration monstersYAML;
     private VersionedSmartYamlConfiguration replacementsYAML;
@@ -58,7 +57,6 @@ public final class BeastPlugin extends FacePlugin {
     @Override
     public void enable() {
         beastDataMap = new HashMap<>();
-        replacementDataTable = HashBasedTable.create();
 
         configYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "config.yml"),
                 getResource("config.yml"),
@@ -152,28 +150,6 @@ public final class BeastPlugin extends FacePlugin {
             }
             beastDataMap.put(entityType, data);
         }
-        for (String entityKey : replacementsYAML.getKeys(false)) {
-            if (!replacementsYAML.isConfigurationSection(entityKey)) {
-                continue;
-            }
-            EntityType entityType = EntityType.valueOf(entityKey);
-            ConfigurationSection entitySection = replacementsYAML.getConfigurationSection(entityKey);
-            for (String biomeKey : entitySection.getKeys(false)) {
-                Biome biome = Biome.valueOf(biomeKey);
-                ReplacementData data = new ReplacementData(entityType, biome);
-                if (!entitySection.isConfigurationSection(biomeKey)) {
-                    continue;
-                }
-                ConfigurationSection biomeSection = entitySection.getConfigurationSection(biomeKey);
-                for (String levelKey : biomeSection.getKeys(false)) {
-                    int level = NumberUtils.toInt(levelKey);
-                    data.setSubReplacementData(level, biomeSection.getString(levelKey));
-                }
-                replacementDataTable.put(entityType, biome, data);
-            }
-        }
-
-        new BeastRunnable(this).runTaskTimer(this, 20L, 20L * 5);
 
         Bukkit.getPluginManager().registerEvents(new BeastListener(this), this);
     }
@@ -210,10 +186,6 @@ public final class BeastPlugin extends FacePlugin {
             return beastDataMap.get(type);
         }
         return null;
-    }
-
-    public Table<EntityType, Biome, ReplacementData> getReplacementDataTable() {
-        return replacementDataTable;
     }
 
 }
