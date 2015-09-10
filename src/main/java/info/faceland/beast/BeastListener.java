@@ -30,6 +30,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Slime;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -67,6 +68,7 @@ public final class BeastListener implements Listener {
         if (startingLevel < 0) {
             return;
         }
+        double healthMult = 1.0;
         event.getEntity().getEquipment().clear();
         if (event.getEntity() instanceof PigZombie) {
             event.getEntity().getEquipment().setHelmet(new ItemStack(Material.GOLD_HELMET));
@@ -84,6 +86,9 @@ public final class BeastListener implements Listener {
                 event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.BOW));
             }
             event.getEntity().getEquipment().setItemInHandDropChance(0f);
+        } else if (event.getEntity() instanceof Slime) {
+            Slime slime = (Slime) event.getEntity();
+            healthMult = slime.getSize() / 4;
         } else if (event.getEntity() instanceof Wolf) {
             Wolf wolf = (Wolf) event.getEntity();
             wolf.setAngry(true);
@@ -145,7 +150,7 @@ public final class BeastListener implements Listener {
         }
 
         event.getEntity().setCustomName(name);
-        double newMaxHealth = data.getHealthExpression().setVariable("LEVEL", level).evaluate();
+        double newMaxHealth = healthMult * data.getHealthExpression().setVariable("LEVEL", level).evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
         event.getEntity().setHealth(Math.min(2, newMaxHealth) / 2);
         event.getEntity().setMaxHealth(newMaxHealth);
