@@ -67,6 +67,7 @@ public final class BeastListener implements Listener {
                 .getName() + ".starting-level", -1);
 
         if (startingLevel < 0) {
+            plugin.getLogger().info("event got ded b/c world not found!?");
             return;
         }
         event.getEntity().getEquipment().clear();
