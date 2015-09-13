@@ -49,7 +49,7 @@ public class EliteAbilities implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+    public void onEliteDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             return;
         }
@@ -57,6 +57,9 @@ public class EliteAbilities implements Listener {
             return;
         }
         if (event.getDamager().getCustomName() == null) {
+            return;
+        }
+        if (!(event.getDamager() instanceof LivingEntity && event.getEntity() instanceof LivingEntity)) {
             return;
         }
         LivingEntity monster = (LivingEntity) event.getDamager();
@@ -96,7 +99,7 @@ public class EliteAbilities implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDeath(EntityDeathEvent event) {
+    public void onEliteDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof Player) {
             return;
         }
