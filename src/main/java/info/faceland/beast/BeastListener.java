@@ -26,6 +26,7 @@ import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.PigZombie;
@@ -40,6 +41,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -108,48 +111,50 @@ public final class BeastListener implements Listener {
         level = Math.max(level, 1);
 
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
-            level += 10;
+            rankName = ChatColor.WHITE + "[S] ";
+            event.getEntity().setMetadata("RANK", new FixedMetadataValue(plugin, 0));
+            Bukkit.getLogger().info("MONSTER RANK: " + event.getEntity().getMetadata("RANK").get(0).asInt());
+            level += 7;
         } else {
-            boolean rankingUp = true;
-            while (rankingUp) {
-                rankingUp = false;
-                if (random.nextDouble() < rankUp && rank < 4) {
-                    rank++;
-                    rankingUp = true;
-                }
+            while (random.nextDouble() < rankUp && rank < 4) {
+                rank++;
             }
             switch (rank) {
                 case 0:
                     rankName = "";
+                    event.getEntity().setMetadata("RANK", new FixedMetadataValue(plugin, 0));
+                    Bukkit.getLogger().info("MONSTER RANK: " + event.getEntity().getMetadata("RANK").get(0).asInt());
                     break;
                 case 1:
-                    rankName = ChatColor.BLUE + "[M]";
-                    level += 5;
+                    rankName = ChatColor.BLUE + "[M] ";
+                    event.getEntity().setMetadata("RANK", new FixedMetadataValue(plugin, 1));
+                    Bukkit.getLogger().info("MONSTER RANK: " + event.getEntity().getMetadata("RANK").get(0).asInt());
                     break;
                 case 2:
-                    rankName = ChatColor.DARK_PURPLE + "[R]";
-                    level += 10;
+                    rankName = ChatColor.DARK_PURPLE + "[R] ";
+                    event.getEntity().setMetadata("RANK", new FixedMetadataValue(plugin, 2));
+                    Bukkit.getLogger().info("MONSTER RANK: " + event.getEntity().getMetadata("RANK").get(0).asInt());
                     break;
                 case 3:
-                    rankName = ChatColor.RED + "[E]";
-                    level += 15;
+                    rankName = ChatColor.RED + "[E] ";
+                    event.getEntity().setMetadata("RANK", new FixedMetadataValue(plugin, 3));
+                    Bukkit.getLogger().info("MONSTER RANK: " + event.getEntity().getMetadata("RANK").get(0).asInt());
                     break;
                 case 4:
-                    rankName = ChatColor.GOLD + "[L]";
-                    level += 20;
+                    rankName = ChatColor.GOLD + "[L] ";
+                    event.getEntity().setMetadata("RANK", new FixedMetadataValue(plugin, 4));
+                    Bukkit.getLogger().info("MONSTER RANK: " + event.getEntity().getMetadata("RANK").get(0).asInt());
                     break;
             }
         }
 
-        String name = TextUtils.color(TextUtils.args(
-                data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}}));
-        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
-            name += "*";
-        } else {
-            name = rankName + " " + name + " " + rankName;
-        }
+        String name = TextUtils.color(TextUtils.args(data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}}));
+        name = rankName + name;
 
         event.getEntity().setCustomName(name);
+        event.getEntity().setMetadata("LEVEL", new FixedMetadataValue(plugin, level));
+        Bukkit.getLogger().info("MONSTER LEVEL: " + event.getEntity().getMetadata("LEVEL").get(0).asInt());
+
         double newMaxHealth = healthMult * data.getHealthExpression().setVariable("LEVEL", level).evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
         event.getEntity().setHealth(Math.min(2, newMaxHealth) / 2);
@@ -188,7 +193,7 @@ public final class BeastListener implements Listener {
         if (cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             mult *= 0.2D;
         }
-        if (event.getEntity().getCustomName().endsWith("*")) {
+        if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "[S]")) {
             mult *= (1D / 3D);
         }
         int level = NumberUtils.toInt(
