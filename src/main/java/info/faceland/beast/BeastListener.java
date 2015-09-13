@@ -109,7 +109,7 @@ public final class BeastListener implements Listener {
         level = Math.max(level, 1);
 
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
-            rankName = ChatColor.WHITE + "[S] ";
+            rankName = ChatColor.WHITE + "Spawned ";
             level += 7;
         } else {
             while (random.nextDouble() < rankUp && rank < 4) {
@@ -120,16 +120,16 @@ public final class BeastListener implements Listener {
                     rankName = "";
                     break;
                 case 1:
-                    rankName = ChatColor.BLUE + "[M] ";
+                    rankName = ChatColor.BLUE + "Magic ";
                     break;
                 case 2:
-                    rankName = ChatColor.DARK_PURPLE + "[R] ";
+                    rankName = ChatColor.DARK_PURPLE + "Rare ";
                     break;
                 case 3:
-                    rankName = ChatColor.RED + "[E] ";
+                    rankName = ChatColor.RED + "Epic ";
                     break;
                 case 4:
-                    rankName = ChatColor.GOLD + "[L] ";
+                    rankName = ChatColor.GOLD + "Legendary ";
                     break;
             }
         }
@@ -139,7 +139,8 @@ public final class BeastListener implements Listener {
 
         event.getEntity().setCustomName(name);
 
-        double newMaxHealth = healthMult * data.getHealthExpression().setVariable("LEVEL", level).evaluate();
+        double newMaxHealth = healthMult * (1 + (rank * 0.25)) *data.getHealthExpression().setVariable("LEVEL", level)
+                .evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
         event.getEntity().setHealth(Math.min(2, newMaxHealth) / 2);
         event.getEntity().setMaxHealth(newMaxHealth);

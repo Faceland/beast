@@ -51,7 +51,6 @@ public final class BeastPlugin extends FacePlugin {
     private Map<EntityType, BeastData> beastDataMap;
     private VersionedSmartYamlConfiguration configYAML;
     private VersionedSmartYamlConfiguration monstersYAML;
-    private VersionedSmartYamlConfiguration replacementsYAML;
     private MasterConfiguration settings;
 
     @Override
@@ -70,16 +69,10 @@ public final class BeastPlugin extends FacePlugin {
         if (monstersYAML.update()) {
             getLogger().info("Updating monsters.yml");
         }
-        replacementsYAML = new VersionedSmartYamlConfiguration(new File(getDataFolder(), "replacements.yml"),
-                getResource("replacements.yml"),
-                VersionedConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
-        if (replacementsYAML.update()) {
-            getLogger().info("Updating replacements.yml");
-        }
 
         settings = new MasterConfiguration();
 
-        settings.load(configYAML, replacementsYAML, monstersYAML);
+        settings.load(configYAML, monstersYAML);
 
         for (String key : monstersYAML.getKeys(false)) {
             if (!monstersYAML.isConfigurationSection(key)) {
@@ -152,13 +145,13 @@ public final class BeastPlugin extends FacePlugin {
         }
 
         Bukkit.getPluginManager().registerEvents(new BeastListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new EliteAbilities(this), this);
     }
 
     @Override
     public void disable() {
         HandlerList.unregisterAll(this);
         settings = null;
-        replacementsYAML = null;
         monstersYAML = null;
         configYAML = null;
         beastDataMap = null;
