@@ -152,8 +152,10 @@ public final class BeastListener implements Listener {
         name = rankName + name;
 
         event.getEntity().setCustomName(name);
-        event.getEntity().setMetadata("LEVEL", new FixedMetadataValue(plugin, level));
-        Bukkit.getLogger().info("MONSTER LEVEL: " + event.getEntity().getMetadata("LEVEL").get(0).asInt());
+        event.getEntity().setMetadata("DAMAGE", new FixedMetadataValue(plugin, data.getDamageExpression().setVariable
+                ("LEVEL", level).evaluate()));
+        Bukkit.getLogger().info("SPAWNED MONSTER META DAMAGE: " + event.getEntity().getMetadata("DAMAGE").get(0)
+                .asDouble());
 
         double newMaxHealth = healthMult * data.getHealthExpression().setVariable("LEVEL", level).evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
