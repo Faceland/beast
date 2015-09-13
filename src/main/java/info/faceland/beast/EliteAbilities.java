@@ -144,7 +144,7 @@ public class EliteAbilities implements Listener {
                 break;
             case 2:
                 t.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 2));
-                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 200, 2));
+                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 200, 1));
                 t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 7));
                 break;
         }
