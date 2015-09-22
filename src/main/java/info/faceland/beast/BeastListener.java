@@ -29,7 +29,9 @@ import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Wolf;
@@ -183,6 +185,14 @@ public final class BeastListener implements Listener {
         }
         int level = NumberUtils.toInt(
                 CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
-        event.setDroppedExp((int) (data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * mult));
+        if (event.getEntity().getKiller() != null) {
+            int xp = (int) (data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * mult);
+            ExperienceOrb orb = event.getEntity().getWorld().spawn(event.getEntity().getKiller().getLocation(), ExperienceOrb
+                    .class);
+            orb.setExperience(xp);
+            event.setDroppedExp(0);
+        } else {
+            event.setDroppedExp((int) (data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * mult));
+        }
     }
 }
