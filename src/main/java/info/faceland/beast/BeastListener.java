@@ -121,15 +121,19 @@ public final class BeastListener implements Listener {
                     break;
                 case 1:
                     rankName = ChatColor.BLUE + "Magic ";
+                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
                     break;
                 case 2:
                     rankName = ChatColor.DARK_PURPLE + "Rare ";
+                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
                     break;
                 case 3:
                     rankName = ChatColor.RED + "Epic ";
+                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
                     break;
                 case 4:
                     rankName = ChatColor.GOLD + "Legendary ";
+                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
                     break;
             }
         }
@@ -139,7 +143,7 @@ public final class BeastListener implements Listener {
 
         event.getEntity().setCustomName(name);
 
-        double newMaxHealth = healthMult * (1 + (rank * 0.25)) *data.getHealthExpression().setVariable("LEVEL", level)
+        double newMaxHealth = healthMult * (1 + (rank * 0.55)) * data.getHealthExpression().setVariable("LEVEL", level)
                 .evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
         event.getEntity().setHealth(Math.min(2, newMaxHealth) / 2);
