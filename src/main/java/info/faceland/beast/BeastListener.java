@@ -143,7 +143,7 @@ public final class BeastListener implements Listener {
 
         event.getEntity().setCustomName(name);
 
-        double newMaxHealth = healthMult * (1 + (rank * 0.55)) * data.getHealthExpression().setVariable("LEVEL", level)
+        double newMaxHealth = healthMult * (1 + (rank * 0.75)) * data.getHealthExpression().setVariable("LEVEL", level)
                 .evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
         event.getEntity().setHealth(Math.min(2, newMaxHealth) / 2);
