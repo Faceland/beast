@@ -183,9 +183,6 @@ public final class BeastListener implements Listener {
         if (cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             mult *= 0.2D;
         }
-        if (event.getEntity().getCustomName().endsWith("*")) {
-            mult *= (1D / 3D);
-        }
         int level = NumberUtils.toInt(
                 CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
         event.setDroppedExp((int) (data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * mult));
