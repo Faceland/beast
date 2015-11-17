@@ -48,7 +48,7 @@ public class EliteAbilities implements Listener {
         this.random = new Random(System.currentTimeMillis());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onEliteDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             return;
