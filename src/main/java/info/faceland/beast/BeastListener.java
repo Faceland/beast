@@ -182,8 +182,8 @@ public final class BeastListener implements Listener {
         if (cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             mult *= 0.2D;
         }
-        if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "[S]")) {
-            mult *= (1D / 3D);
+        if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
+            mult *= 0.4D;
         }
         int level = NumberUtils.toInt(
                 CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
