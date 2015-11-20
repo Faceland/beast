@@ -53,7 +53,7 @@ public class EliteAbilities implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEliteDamage(EntityDamageByEntityEvent event) {
-        if (event.getEntity() == null) {
+        if (event.getDamager() == null) {
             return;
         }
         LivingEntity monster = null;
@@ -73,7 +73,6 @@ public class EliteAbilities implements Listener {
         if (!(event.getEntity() instanceof LivingEntity)) {
             return;
         }
-        LivingEntity target = (LivingEntity) event.getEntity();
         String mobName = monster.getCustomName();
         if (!monster.hasMetadata("RANK")) {
             if (mobName.startsWith(ChatColor.BLUE + "Magic")) {
@@ -100,17 +99,17 @@ public class EliteAbilities implements Listener {
         }
         if (monster.getMetadata("RANK").get(0).asInt() > 1) {
             if (monster.getMetadata("RANK").get(0).asInt() == 2) {
-                triggerSkillOne(target, monster.getMetadata("SKILL1").get(0).asInt());
+                triggerSkillOne((LivingEntity) event.getEntity(), monster.getMetadata("SKILL1").get(0).asInt());
             } else {
-                triggerSkillOne(target, monster.getMetadata("SKILL1").get(0).asInt());
-                triggerSkillTwo(monster, target, monster.getMetadata("SKILL2").get(0).asInt());
+                triggerSkillOne((LivingEntity) event.getEntity(), monster.getMetadata("SKILL1").get(0).asInt());
+                triggerSkillTwo(monster, (LivingEntity) event.getEntity(), monster.getMetadata("SKILL2").get(0).asInt());
             }
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEliteDeath(EntityDeathEvent event) {
-        if (event.getEntity() instanceof Player) {
+        if (!(event.getEntity() instanceof Monster)) {
             return;
         }
         if (event.getEntity() == null) {
