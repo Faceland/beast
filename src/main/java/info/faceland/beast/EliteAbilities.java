@@ -26,7 +26,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Skeleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -48,21 +51,28 @@ public class EliteAbilities implements Listener {
         this.random = new Random(System.currentTimeMillis());
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEliteDamage(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player) {
+        if (event.getEntity() == null) {
             return;
         }
-        if (event.getDamager() == null || event.getEntity() == null) {
+        LivingEntity monster = null;
+        if (event.getDamager() instanceof Projectile) {
+            if (((Projectile) event.getDamager()).getShooter() instanceof Skeleton) {
+                monster = (LivingEntity) ((Projectile) event.getDamager()).getShooter();
+            }
+        } else if (event.getDamager() instanceof Monster) {
+            monster = (LivingEntity) event.getDamager();
+        }
+        if (monster == null) {
             return;
         }
         if (event.getDamager().getCustomName() == null) {
             return;
         }
-        if (!(event.getDamager() instanceof LivingEntity && event.getEntity() instanceof LivingEntity)) {
+        if (!(event.getEntity() instanceof LivingEntity)) {
             return;
         }
-        LivingEntity monster = (LivingEntity) event.getDamager();
         LivingEntity target = (LivingEntity) event.getEntity();
         String mobName = monster.getCustomName();
         if (!monster.hasMetadata("RANK")) {
@@ -144,13 +154,12 @@ public class EliteAbilities implements Listener {
             case 2:
                 t.setFireTicks(65);
                 break;
-            case 3:
-                if (a instanceof Creeper) {
-                    break;
-                }
-                a.setHealth(Math.min(a.getHealth() + (a.getMaxHealth() / 10), a.getMaxHealth()));
-                break;
         }
+        if (a instanceof Creeper) {
+            return;
+        }
+        a.setHealth(Math.min(a.getHealth() + (a.getMaxHealth() / 20), a.getMaxHealth()));
+
     }
 
     private void triggerDeathSkill(LivingEntity t, int skill) {
