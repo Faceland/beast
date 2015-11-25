@@ -157,7 +157,7 @@ public class EliteAbilities implements Listener {
         if (a instanceof Creeper) {
             return;
         }
-        a.setHealth(Math.min(a.getHealth() + (a.getMaxHealth() / 20), a.getMaxHealth()));
+        a.setHealth(Math.min(a.getHealth() + (a.getMaxHealth() / 40), a.getMaxHealth()));
 
     }
 
