@@ -131,13 +131,13 @@ public class EliteAbilities implements Listener {
     private void triggerSkillOne(LivingEntity t, int skill) {
         switch (skill) {
             case 0:
-                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1, true));
+                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1, true), false);
                 break;
             case 1:
-                t.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 80, 0, true));
+                t.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 80, 0, true), false);
                 break;
             case 2:
-                t.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 50, 0));
+                t.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 50, 0, true), false);
                 break;
         }
     }
@@ -145,10 +145,10 @@ public class EliteAbilities implements Listener {
     private void triggerSkillTwo(LivingEntity a, LivingEntity t, int skill) {
         switch (skill) {
             case 0:
-                t.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 50, 1, true));
+                t.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 50, 1, true), false);
                 break;
             case 1:
-                t.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1, true));
+                t.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1, true), false);
                 break;
             case 2:
                 t.setFireTicks(65);
@@ -172,13 +172,13 @@ public class EliteAbilities implements Listener {
                 t.getLocation().getWorld().spawnEntity(t.getLocation(), EntityType.BAT);
                 break;
             case 1:
-                t.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 200, 2, true));
-                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 3, true));
+                t.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 200, 2, true), false);
+                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 3, true), false);
                 break;
             case 2:
-                t.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 2));
-                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 200, 1));
-                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 7));
+                t.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 2, true), false);
+                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 200, 1, true), false);
+                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 7, true), false);
                 break;
         }
     }
