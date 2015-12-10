@@ -29,6 +29,10 @@ import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
@@ -70,78 +74,90 @@ public final class BeastListener implements Listener {
             return;
         }
         double healthMult = 1.0;
-        event.getEntity().getEquipment().clear();
-        if (event.getEntity() instanceof PigZombie) {
-            event.getEntity().getEquipment().setHelmet(new ItemStack(Material.GOLD_HELMET));
-            if (random.nextDouble() < 0.5) {
-                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.GOLD_AXE));
-            } else {
-                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD));
-            }
-            event.getEntity().getEquipment().setItemInHandDropChance(0f);
-            event.getEntity().getEquipment().setHelmetDropChance(0f);
-        } else if (event.getEntity() instanceof Skeleton) {
-            if (random.nextDouble() < plugin.getSettings().getDouble("config.give-skeletons-sword-chance", 0.1)) {
-                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.STONE_SWORD));
-            } else {
-                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.BOW));
-            }
-            event.getEntity().getEquipment().setItemInHandDropChance(0f);
-        } else if (event.getEntity() instanceof Slime) {
-            Slime slime = (Slime) event.getEntity();
-            healthMult = slime.getSize() / 4;
-        } else if (event.getEntity() instanceof Wolf) {
-            Wolf wolf = (Wolf) event.getEntity();
-            wolf.setAngry(true);
-        }
-        Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
-        Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
-                event.getLocation().getWorld().getSpawnLocation().getZ());
-        double distanceFromSpawn = pos.distance(worldPos);
-        double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
-                ".distance-per-level", 150);
-        double rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
-        String rankName = "";
+        Bukkit.getLogger().info(event.getEntity().getCustomName());
         int rank = 0;
+        int level = 0;
+        if (event.getEntity().getCustomName() == null) {
+            Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
+            Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
+                    event.getLocation().getWorld().getSpawnLocation().getZ());
+            double distanceFromSpawn = pos.distance(worldPos);
+            double pow = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld().getName() +
+                    ".distance-per-level", 150);
+            level = (int) (startingLevel + distanceFromSpawn / pow);
+            level += -2 + random.nextInt(5);
+            level = Math.max(level, 1);
 
-        int level = (int) (startingLevel + distanceFromSpawn / pow);
-        level += -2 + random.nextInt(5);
-        level = Math.max(level, 1);
-
-        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
-            rankName = ChatColor.WHITE + "Spawned ";
-            level += 7;
-        } else {
-            while (random.nextDouble() < rankUp && rank < 4) {
-                rank++;
+            event.getEntity().getEquipment().clear();
+            if (event.getEntity() instanceof PigZombie) {
+                event.getEntity().getEquipment().setHelmet(new ItemStack(Material.GOLD_HELMET));
+                if (random.nextDouble() < 0.5) {
+                    event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.GOLD_AXE));
+                } else {
+                    event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD));
+                }
+                event.getEntity().getEquipment().setItemInHandDropChance(0f);
+                event.getEntity().getEquipment().setHelmetDropChance(0f);
+            } else if (event.getEntity() instanceof Skeleton) {
+                if (random.nextDouble() < plugin.getSettings().getDouble("config.give-skeletons-sword-chance", 0.1)) {
+                    event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.STONE_SWORD));
+                } else {
+                    event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.BOW));
+                }
+                event.getEntity().getEquipment().setItemInHandDropChance(0f);
+            } else if (event.getEntity() instanceof Slime) {
+                Slime slime = (Slime) event.getEntity();
+                healthMult = slime.getSize() / 4;
+            } else if (event.getEntity() instanceof Wolf) {
+                Wolf wolf = (Wolf) event.getEntity();
+                wolf.setAngry(true);
             }
-            switch (rank) {
-                case 0:
-                    rankName = "";
-                    break;
-                case 1:
-                    rankName = ChatColor.BLUE + "Magic ";
-                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
-                    break;
-                case 2:
-                    rankName = ChatColor.DARK_PURPLE + "Rare ";
-                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
-                    break;
-                case 3:
-                    rankName = ChatColor.RED + "Epic ";
-                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
-                    break;
-                case 4:
-                    rankName = ChatColor.GOLD + "Legendary ";
-                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
-                    break;
+
+            double rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
+            String rankName = "";
+
+            if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+                rankName = ChatColor.WHITE + "Spawned ";
+                level += 7;
+            } else {
+                while (random.nextDouble() < rankUp && rank < 4) {
+                    rank++;
+                }
+                switch (rank) {
+                    case 0:
+                        rankName = "";
+                        break;
+                    case 1:
+                        rankName = ChatColor.BLUE + "Magic ";
+                        event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
+                        break;
+                    case 2:
+                        rankName = ChatColor.DARK_PURPLE + "Rare ";
+                        event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
+                        break;
+                    case 3:
+                        rankName = ChatColor.RED + "Epic ";
+                        event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
+                        break;
+                    case 4:
+                        rankName = ChatColor.GOLD + "Legendary ";
+                        event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
+                        break;
+                }
+            }
+
+            String name = TextUtils.color(TextUtils.args(data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}}));
+            name = rankName + name;
+
+            event.getEntity().setCustomName(name);
+        } else {
+            level = NumberUtils.toInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity()
+                    .getCustomName())));
+            if (event.getEntity().getCustomName().startsWith(ChatColor.DARK_RED + "Boss")) {
+                rank = 8;
+                event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
             }
         }
-
-        String name = TextUtils.color(TextUtils.args(data.getNameFormat(), new String[][]{{"%level%", String.valueOf(level)}}));
-        name = rankName + name;
-
-        event.getEntity().setCustomName(name);
 
         double newMaxHealth = healthMult * (1 + (rank * 0.75)) * data.getHealthExpression().setVariable("LEVEL", level)
                 .evaluate();
@@ -174,19 +190,27 @@ public final class BeastListener implements Listener {
                 }
             }
         }
-        double mult = 1D;
-        if (event.getEntity().getLastDamageCause() == null) {
+        EntityDamageEvent.DamageCause damageCause = event.getEntity().getLastDamageCause().getCause();
+        if (event.getEntity().getKiller() == null && damageCause != EntityDamageEvent.DamageCause.ENTITY_ATTACK &&
+                damageCause != EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
             return;
         }
-        EntityDamageEvent.DamageCause cause = event.getEntity().getLastDamageCause().getCause();
-        if (cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            mult *= 0.2D;
-        }
+        double mult = 1D;
         if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
             mult *= 0.4D;
         }
-        int level = NumberUtils.toInt(
-                CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
-        event.setDroppedExp((int) (data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * mult));
+        int level = NumberUtils.toInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
+        event.setDroppedExp((int)(data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * mult));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntityDeathAutoOrb(EntityDeathEvent event) {
+        if (event.getEntity().getKiller() == null) {
+            return;
+        }
+        World w = event.getEntity().getWorld();
+        Entity e = w.spawnEntity(event.getEntity().getKiller().getLocation(), EntityType.EXPERIENCE_ORB);
+        ((ExperienceOrb)e).setExperience(event.getDroppedExp());
+        event.setDroppedExp(0);
     }
 }
