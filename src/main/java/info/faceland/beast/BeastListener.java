@@ -26,6 +26,8 @@ import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 
+import net.elseland.xikage.MythicMobs.Mobs.ActiveMobHandler;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -60,8 +62,11 @@ public final class BeastListener implements Listener {
         this.random = new Random(System.currentTimeMillis());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
+        if (!ActiveMobHandler.isRegisteredMob(event.getEntity().getUniqueId())) {
+            return;
+        }
         BeastData data = plugin.getData(event.getEntity().getType());
         if (data == null || event.isCancelled()) {
             return;
@@ -74,7 +79,6 @@ public final class BeastListener implements Listener {
             return;
         }
         double healthMult = 1.0;
-        Bukkit.getLogger().info(event.getEntity().getCustomName());
         int rank = 0;
         int level = 0;
         if (event.getEntity().getCustomName() == null) {
