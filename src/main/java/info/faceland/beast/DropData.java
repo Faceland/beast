@@ -138,8 +138,7 @@ public final class DropData {
         hiltItemStack.setName(name);
         hiltItemStack.setLore(lore);
         hiltItemStack.addUnsafeEnchantments(enchantmentMap);
-        hiltItemStack.setAmount(Math.max(1, (int) (random.nextDouble() * (maximumAmount - minimumAmount)) +
-                minimumAmount));
+        hiltItemStack.setAmount(Math.max(minimumAmount, (int) (random.nextDouble() * maximumAmount)));
         return hiltItemStack;
     }
 
