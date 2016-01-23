@@ -22,6 +22,8 @@
  */
 package info.faceland.beast;
 
+import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
@@ -56,6 +58,9 @@ public class EliteAbilities implements Listener {
         if (event.getDamager() == null || event.isCancelled()) {
             return;
         }
+        if (event.getEntity() instanceof MythicMob) {
+            return;
+        }
         LivingEntity monster = null;
         if (event.getDamager() instanceof Projectile) {
             if (((Projectile) event.getDamager()).getShooter() instanceof Skeleton) {
@@ -67,10 +72,7 @@ public class EliteAbilities implements Listener {
         if (monster == null) {
             return;
         }
-        if (event.getDamager().getCustomName() == null) {
-            return;
-        }
-        if (!(event.getEntity() instanceof LivingEntity)) {
+        if (monster.getCustomName() == null) {
             return;
         }
         String mobName = monster.getCustomName();
@@ -109,24 +111,14 @@ public class EliteAbilities implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEliteDeath(EntityDeathEvent event) {
-        if (!(event.getEntity() instanceof Monster)) {
+        if (!event.getEntity().hasMetadata("RANK")) {
             return;
         }
-        if (event.getEntity() == null) {
-            return;
-        }
-        if (event.getEntity().getCustomName() == null) {
-            return;
-        }
-        LivingEntity monster = event.getEntity();
-        if (monster.hasMetadata("RANK")) {
-            if (monster.getMetadata("RANK").get(0).asInt() > 3) {
-                triggerDeathSkill(monster.getKiller(), monster.getMetadata("SKILL3").get(0).asInt());
-            }
+        if (event.getEntity().getMetadata("RANK").get(0).asInt() > 3) {
+            triggerDeathSkill(event.getEntity().getKiller(), event.getEntity().getMetadata("SKILL3").get(0).asInt());
         }
 
     }
-
 
     private void triggerSkillOne(LivingEntity t, int skill) {
         switch (skill) {
