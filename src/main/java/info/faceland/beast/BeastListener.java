@@ -28,6 +28,7 @@ import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 
 import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -36,6 +37,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -77,6 +79,7 @@ public final class BeastListener implements Listener {
         }
         int rank = 0;
         int level = 1;
+        double hpMult = 1;
         Vec2 pos = new Vec2(event.getLocation().getX(), event.getLocation().getZ());
         Vec2 worldPos = new Vec2(event.getLocation().getWorld().getSpawnLocation().getX(),
                 event.getLocation().getWorld().getSpawnLocation().getZ());
@@ -103,6 +106,8 @@ public final class BeastListener implements Listener {
                 event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.BOW));
             }
             event.getEntity().getEquipment().setItemInHandDropChance(0f);
+        } else if (event.getEntity() instanceof Slime) {
+            hpMult = (1 + ((Slime) event.getEntity()).getSize()) / 4;
         }
         double rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
         String rankName = "";
@@ -141,7 +146,8 @@ public final class BeastListener implements Listener {
 
         event.getEntity().setCustomName(name);
 
-        double newMaxHealth = (1 + (rank * 0.75)) * data.getHealthExpression().setVariable("LEVEL", level).evaluate();
+        double newMaxHealth = (1 + (rank * 0.75)) * hpMult * data.getHealthExpression().setVariable("LEVEL", level)
+                .evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
         event.getEntity().setMaxHealth(Math.max(2, newMaxHealth));
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
@@ -166,7 +172,7 @@ public final class BeastListener implements Listener {
             event.getDrops().clear();
             for (DropData dropData : data.getDrops()) {
                 if (random.nextDouble() < dropData.getChance()) {
-                    event.getDrops().add(dropData.toItemStack(random));
+                    event.getDrops().add(dropData.toItemStack(dropData.getMinimumAmount(), dropData.getMaximumAmount()));
                 }
             }
         }
@@ -175,12 +181,15 @@ public final class BeastListener implements Listener {
                 damageCause != EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
             return;
         }
-        double mult = 1D;
+        double xpMult = 1D;
+        if (event.getEntity() instanceof Slime) {
+            xpMult = (1 + ((Slime) event.getEntity()).getSize()) / 4;
+        }
         if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
-            mult *= 0.4D;
+            xpMult *= 0.05D;
         }
         int level = NumberUtils.toInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
-        event.setDroppedExp((int)(data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * mult));
+        event.setDroppedExp((int)(data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * xpMult));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

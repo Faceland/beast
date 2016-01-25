@@ -23,8 +23,11 @@
 package info.faceland.beast;
 
 import com.tealcube.minecraft.bukkit.hilt.HiltItemStack;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import java.util.concurrent.ThreadLocalRandom;
 
 import java.util.*;
 
@@ -133,12 +136,13 @@ public final class DropData {
         return this;
     }
 
-    public HiltItemStack toItemStack(Random random) {
+    public HiltItemStack toItemStack(int min, int max) {
         HiltItemStack hiltItemStack = new HiltItemStack(material);
         hiltItemStack.setName(name);
         hiltItemStack.setLore(lore);
         hiltItemStack.addUnsafeEnchantments(enchantmentMap);
-        hiltItemStack.setAmount(Math.max(minimumAmount, (int) (random.nextDouble() * maximumAmount)));
+        hiltItemStack.setAmount(ThreadLocalRandom.current().nextInt(min, max + 1));
+        Bukkit.getLogger().info("dropped amount: " + hiltItemStack.getAmount());
         return hiltItemStack;
     }
 

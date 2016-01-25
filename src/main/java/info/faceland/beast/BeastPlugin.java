@@ -119,8 +119,8 @@ public final class BeastPlugin extends FacePlugin {
                     ConfigurationSection inner = dCS.getConfigurationSection(k);
                     DropData dropData = new DropData();
                     Material material = Material.getMaterial(k);
-                    int minimumAmount = inner.getInt("minimum-amount");
-                    int maximumAmount = inner.getInt("maximum-amount");
+                    int minimumAmount = inner.getInt("min-amount");
+                    int maximumAmount = inner.getInt("max-amount");
                     double chance = inner.getDouble("chance");
                     String name = inner.getString("name");
                     List<String> lore = inner.getStringList("lore");
