@@ -142,7 +142,6 @@ public final class DropData {
         hiltItemStack.setLore(lore);
         hiltItemStack.addUnsafeEnchantments(enchantmentMap);
         hiltItemStack.setAmount(ThreadLocalRandom.current().nextInt(min, max + 1));
-        Bukkit.getLogger().info("dropped amount: " + hiltItemStack.getAmount());
         return hiltItemStack;
     }
 

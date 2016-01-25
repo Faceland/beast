@@ -107,7 +107,7 @@ public final class BeastListener implements Listener {
             }
             event.getEntity().getEquipment().setItemInHandDropChance(0f);
         } else if (event.getEntity() instanceof Slime) {
-            hpMult = (1 + ((Slime) event.getEntity()).getSize()) / 4;
+            hpMult = (1 + (double)((Slime) event.getEntity()).getSize()) / 4;
         }
         double rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
         String rankName = "";
