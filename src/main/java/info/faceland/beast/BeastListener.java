@@ -28,7 +28,6 @@ import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 
 import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -46,6 +45,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -154,6 +154,8 @@ public final class BeastListener implements Listener {
         event.getEntity().setCanPickupItems(false);
         event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, (int) speed,
                 false, false));
+        double damage = (data.getDamageExpression().setVariable("LEVEL", level).evaluate());
+        event.getEntity().setMetadata("DAMAGE", new FixedMetadataValue(plugin, damage));
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
