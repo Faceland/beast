@@ -26,8 +26,6 @@ import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 
-import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -63,9 +61,6 @@ public final class BeastListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
-        if (event.getEntity() instanceof MythicMob){
-            return;
-        }
         BeastData data = plugin.getData(event.getEntity().getType());
         if (data == null || event.isCancelled()) {
             return;
@@ -183,12 +178,12 @@ public final class BeastListener implements Listener {
                 damageCause != EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
             return;
         }
+        if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
+            return;
+        }
         double xpMult = 1D;
         if (event.getEntity() instanceof Slime) {
             xpMult = (1 + ((Slime) event.getEntity()).getSize()) / 4;
-        }
-        if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
-            xpMult *= 0.05D;
         }
         int level = NumberUtils.toInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
         event.setDroppedExp((int)(data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * xpMult));

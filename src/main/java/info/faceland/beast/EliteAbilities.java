@@ -22,14 +22,11 @@
  */
 package info.faceland.beast;
 
-import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.event.EventHandler;
@@ -56,9 +53,6 @@ public class EliteAbilities implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEliteDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() == null || event.isCancelled()) {
-            return;
-        }
-        if (event.getEntity() instanceof MythicMob) {
             return;
         }
         LivingEntity monster = null;

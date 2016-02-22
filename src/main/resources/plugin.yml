@@ -2,4 +2,3 @@ name: Beast
 version: ${project.version}
 main: info.faceland.beast.BeastPlugin
 depend: [Facecore]
-softdepend: [MythicMobs]

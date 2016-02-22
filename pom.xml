@@ -64,13 +64,6 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
-        <dependency>
-            <groupId>mythicmobs</groupId>
-            <artifactId>mythicmobs</artifactId>
-            <version>mythicmobs</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/.idea/libraries/MythicMobs-2.0.2.jar</systemPath>
-        </dependency>
     </dependencies>
 
     <build>
