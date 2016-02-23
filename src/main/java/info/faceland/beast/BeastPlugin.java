@@ -34,6 +34,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -43,12 +44,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.Lorinth.BossApi.BossApi;
+
 public final class BeastPlugin extends FacePlugin {
 
     private Map<EntityType, BeastData> beastDataMap;
     private VersionedSmartYamlConfiguration configYAML;
     private VersionedSmartYamlConfiguration monstersYAML;
     private MasterConfiguration settings;
+    private BossApi api;
 
     @Override
     public void enable() {
@@ -66,6 +70,8 @@ public final class BeastPlugin extends FacePlugin {
         if (monstersYAML.update()) {
             getLogger().info("Updating monsters.yml");
         }
+
+        api = BossApi.getPlugin();
 
         settings = new MasterConfiguration();
 
@@ -149,6 +155,7 @@ public final class BeastPlugin extends FacePlugin {
     public void disable() {
         HandlerList.unregisterAll(this);
         settings = null;
+        api = null;
         monstersYAML = null;
         configYAML = null;
         beastDataMap = null;
@@ -169,6 +176,10 @@ public final class BeastPlugin extends FacePlugin {
 
     public MasterConfiguration getSettings() {
         return settings;
+    }
+
+    public BossApi getApi() {
+        return api;
     }
 
     public BeastData getData(EntityType type) {

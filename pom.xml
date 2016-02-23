@@ -64,6 +64,13 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
+        <dependency>
+            <groupId>BossAPI</groupId>
+            <artifactId>LorinthsBossApi</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/.idea/libraries/LorinthsBossApi.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>

@@ -61,6 +61,9 @@ public final class BeastListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
+        if (plugin.getApi().isBoss(event.getEntity())) {
+            return;
+        }
         BeastData data = plugin.getData(event.getEntity().getType());
         if (data == null || event.isCancelled()) {
             return;
