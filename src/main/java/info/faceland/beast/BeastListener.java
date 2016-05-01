@@ -1,17 +1,17 @@
 /**
  * The MIT License
  * Copyright (c) 2015 Teal Cube Games
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -102,7 +102,7 @@ public final class BeastListener implements Listener {
             }
             event.getEntity().getEquipment().setItemInMainHandDropChance(0f);
         } else if (event.getEntity() instanceof Slime) {
-            hpMult = (1 + (double)((Slime) event.getEntity()).getSize()) / 4;
+            hpMult = (1 + (double) ((Slime) event.getEntity()).getSize()) / 4;
         }
         double rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
         String rankName = "";
@@ -176,7 +176,8 @@ public final class BeastListener implements Listener {
             event.getDrops().clear();
             for (DropData dropData : data.getDrops()) {
                 if (random.nextDouble() < dropData.getChance()) {
-                    event.getDrops().add(dropData.toItemStack(dropData.getMinimumAmount(), dropData.getMaximumAmount()));
+                    event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(),
+                            dropData.toItemStack(dropData.getMinimumAmount(), dropData.getMaximumAmount()));
                 }
             }
         }
@@ -193,7 +194,7 @@ public final class BeastListener implements Listener {
             xpMult = (1 + ((Slime) event.getEntity()).getSize()) / 4;
         }
         int level = NumberUtils.toInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
-        event.setDroppedExp((int)(data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * xpMult));
+        event.setDroppedExp((int) (data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * xpMult));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -203,7 +204,7 @@ public final class BeastListener implements Listener {
         }
         World w = event.getEntity().getWorld();
         Entity e = w.spawnEntity(event.getEntity().getKiller().getLocation(), EntityType.EXPERIENCE_ORB);
-        ((ExperienceOrb)e).setExperience(event.getDroppedExp());
+        ((ExperienceOrb) e).setExperience(event.getDroppedExp());
         event.setDroppedExp(0);
     }
 }
