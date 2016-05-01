@@ -88,19 +88,19 @@ public final class BeastListener implements Listener {
         if (event.getEntity() instanceof PigZombie) {
             event.getEntity().getEquipment().setHelmet(new ItemStack(Material.GOLD_HELMET));
             if (random.nextDouble() < 0.5) {
-                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.GOLD_AXE));
+                event.getEntity().getEquipment().setItemInMainHand(new ItemStack(Material.GOLD_AXE));
             } else {
-                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD));
+                event.getEntity().getEquipment().setItemInMainHand(new ItemStack(Material.GOLD_SWORD));
             }
-            event.getEntity().getEquipment().setItemInHandDropChance(0f);
+            event.getEntity().getEquipment().setItemInMainHandDropChance(0f);
             event.getEntity().getEquipment().setHelmetDropChance(0f);
         } else if (event.getEntity() instanceof Skeleton) {
             if (random.nextDouble() < plugin.getSettings().getDouble("config.give-skeletons-sword-chance", 0.1)) {
-                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.STONE_SWORD));
+                event.getEntity().getEquipment().setItemInMainHand(new ItemStack(Material.STONE_SWORD));
             } else {
-                event.getEntity().getEquipment().setItemInHand(new ItemStack(Material.BOW));
+                event.getEntity().getEquipment().setItemInMainHand(new ItemStack(Material.BOW));
             }
-            event.getEntity().getEquipment().setItemInHandDropChance(0f);
+            event.getEntity().getEquipment().setItemInMainHandDropChance(0f);
         } else if (event.getEntity() instanceof Slime) {
             hpMult = (1 + (double)((Slime) event.getEntity()).getSize()) / 4;
         }
