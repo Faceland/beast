@@ -11,12 +11,14 @@ ZOMBIE:
     20:
     - INCREASE_DAMAGE:1
   drops:
-    WOOD_SWORD:
+    drop1:
+      material: WOOD_SWORD
       min-amount: 1
-      max-amount: 5
-      chance: 0.5
-      name: "<white>Wooden Sword"
+      max-amount: 1
+      chance: 0.2
+      name: "<white>Harbringer of the Restart"
       lore:
       - "<white>Lore yo"
+      - "<gray>It will arrive soon..."
       enchantments:
         DAMAGE_ALL: 1
