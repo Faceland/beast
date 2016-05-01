@@ -61,9 +61,6 @@ public final class BeastListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
-        if (plugin.getApi().isBoss(event.getEntity())) {
-            return;
-        }
         BeastData data = plugin.getData(event.getEntity().getType());
         if (data == null || event.isCancelled()) {
             return;
@@ -168,6 +165,13 @@ public final class BeastListener implements Listener {
         if (event.getEntity().getCustomName() == null) {
             return;
         }
+        boolean isSpawnerMob = false;
+        if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
+            if (random.nextDouble() < 0.7) {
+                return;
+            }
+            isSpawnerMob = true;
+        }
         if (!data.getDrops().isEmpty()) {
             event.getDrops().clear();
             for (DropData dropData : data.getDrops()) {
@@ -181,7 +185,7 @@ public final class BeastListener implements Listener {
                 damageCause != EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
             return;
         }
-        if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
+        if (isSpawnerMob) {
             return;
         }
         double xpMult = 1D;

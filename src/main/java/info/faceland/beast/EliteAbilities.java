@@ -52,9 +52,6 @@ public class EliteAbilities implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEliteDamage(EntityDamageByEntityEvent event) {
-        if (plugin.getApi().isBoss(event.getEntity())) {
-            return;
-        }
         if (event.getDamager() == null || event.isCancelled()) {
             return;
         }
