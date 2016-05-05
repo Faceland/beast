@@ -35,6 +35,7 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -165,30 +166,24 @@ public final class BeastListener implements Listener {
         if (event.getEntity().getCustomName() == null) {
             return;
         }
-        boolean isSpawnerMob = false;
+
         if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
-            if (random.nextDouble() < 0.7) {
-                return;
+            if (random.nextDouble() < 0.9) {
+                event.getDrops().clear();
+            } else {
+                dropDrops(event, data);
             }
-            isSpawnerMob = true;
+            return;
         }
-        if (!data.getDrops().isEmpty()) {
-            event.getDrops().clear();
-            for (DropData dropData : data.getDrops()) {
-                if (random.nextDouble() < dropData.getChance()) {
-                    event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(),
-                            dropData.toItemStack(dropData.getMinimumAmount(), dropData.getMaximumAmount()));
-                }
-            }
-        }
+
+        dropDrops(event, data);
+
         EntityDamageEvent.DamageCause damageCause = event.getEntity().getLastDamageCause().getCause();
         if (event.getEntity().getKiller() == null && damageCause != EntityDamageEvent.DamageCause.ENTITY_ATTACK &&
                 damageCause != EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
             return;
         }
-        if (isSpawnerMob) {
-            return;
-        }
+
         double xpMult = 1D;
         if (event.getEntity() instanceof Slime) {
             xpMult = (1 + ((Slime) event.getEntity()).getSize()) / 4;
@@ -206,5 +201,16 @@ public final class BeastListener implements Listener {
         Entity e = w.spawnEntity(event.getEntity().getKiller().getLocation(), EntityType.EXPERIENCE_ORB);
         ((ExperienceOrb) e).setExperience(event.getDroppedExp());
         event.setDroppedExp(0);
+    }
+
+    public void dropDrops(EntityDeathEvent event, BeastData data) {
+        if (!data.getDrops().isEmpty()) {
+            event.getDrops().clear();
+            for (DropData dropData : data.getDrops()) {
+                if (random.nextDouble() < dropData.getChance()) {
+                    event.getDrops().add(dropData.toItemStack(dropData.getMinimumAmount(), dropData.getMaximumAmount()));
+                }
+            }
+        }
     }
 }
