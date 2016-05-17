@@ -35,7 +35,6 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -161,6 +160,11 @@ public final class BeastListener implements Listener {
         }
         BeastData data = plugin.getData(event.getEntityType());
         if (data == null) {
+            if (event.getEntity().getLastDamageCause().getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                if (random.nextDouble() < 0.8) {
+                    event.getDrops().clear();
+                }
+            }
             return;
         }
         if (event.getEntity().getCustomName() == null) {
@@ -173,6 +177,7 @@ public final class BeastListener implements Listener {
             } else {
                 dropDrops(event, data);
             }
+            event.setDroppedExp(0);
             return;
         }
 
