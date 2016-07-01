@@ -28,20 +28,27 @@ import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.ShulkerBullet;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.Witch;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -53,6 +60,8 @@ public final class BeastListener implements Listener {
 
     private final BeastPlugin plugin;
     private final Random random;
+    private static final PotionEffectType[] WITCH_SPELLS = {PotionEffectType.WEAKNESS, PotionEffectType.WITHER,
+            PotionEffectType.POISON, PotionEffectType.SLOW_DIGGING, PotionEffectType.POISON};
 
     public BeastListener(BeastPlugin plugin) {
         this.plugin = plugin;
@@ -119,19 +128,23 @@ public final class BeastListener implements Listener {
                     break;
                 case 1:
                     rankName = ChatColor.BLUE + "Magic ";
-                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
+                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 99999, 0,
+                            false, false));
                     break;
                 case 2:
                     rankName = ChatColor.DARK_PURPLE + "Rare ";
-                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
+                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 99999, 1,
+                            false, false));
                     break;
                 case 3:
                     rankName = ChatColor.RED + "Epic ";
-                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
+                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 99999, 2,
+                            false, false));
                     break;
                 case 4:
                     rankName = ChatColor.GOLD + "Legendary ";
-                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1, false, false));
+                    event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 99999, 3,
+                            false, false));
                     break;
             }
         }
@@ -159,20 +172,22 @@ public final class BeastListener implements Listener {
             return;
         }
         BeastData data = plugin.getData(event.getEntityType());
+
         if (data == null) {
-            if (event.getEntity().getLastDamageCause().getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                if (random.nextDouble() < 0.8) {
+            if (event.getEntity().getKiller() == null) {
+                if (random.nextDouble() < 0.75) {
                     event.getDrops().clear();
                 }
             }
             return;
         }
+
         if (event.getEntity().getCustomName() == null) {
             return;
         }
 
         if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
-            if (random.nextDouble() < 0.9) {
+            if (random.nextDouble() < 0.85) {
                 event.getDrops().clear();
             } else {
                 dropDrops(event, data);
@@ -206,6 +221,44 @@ public final class BeastListener implements Listener {
         Entity e = w.spawnEntity(event.getEntity().getKiller().getLocation(), EntityType.EXPERIENCE_ORB);
         ((ExperienceOrb) e).setExperience(event.getDroppedExp());
         event.setDroppedExp(0);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onWitchPotionThrow(ProjectileLaunchEvent e) {
+        if (!(e.getEntity().getShooter() instanceof Witch)) {
+            return;
+        }
+        e.setCancelled(true);
+        Witch w = (Witch) e.getEntity().getShooter();
+        ShulkerBullet magicProj = w.getWorld().spawn(w.getEyeLocation(), ShulkerBullet.class);
+        w.getWorld().playSound(w.getLocation(), Sound.ENTITY_BLAZE_HURT, 0.9f, 2f);
+
+        magicProj.setShooter(w);
+        magicProj.setTarget(w.getTarget());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onWitchSpell(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof ShulkerBullet)) {
+            return;
+        }
+        if (!(((Projectile)e.getDamager()).getShooter() instanceof Witch)) {
+            return;
+        }
+        if (!(e.getEntity() instanceof LivingEntity)) {
+            return;
+        }
+        LivingEntity t = (LivingEntity) e.getEntity();
+
+        PotionEffectType effect = WITCH_SPELLS[random.nextInt(WITCH_SPELLS.length)];
+        if (t.hasPotionEffect(effect)) {
+            t.removePotionEffect(effect);
+        }
+        t.addPotionEffect(new PotionEffect(effect, 400, 0, true), false);
+
+        t.removePotionEffect(PotionEffectType.LEVITATION);
+        t.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 2, 5, true, false));
+
     }
 
     public void dropDrops(EntityDeathEvent event, BeastData data) {
