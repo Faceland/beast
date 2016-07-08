@@ -218,7 +218,7 @@ public final class BeastListener implements Listener {
             return;
         }
         World w = event.getEntity().getWorld();
-        Entity e = w.spawnEntity(event.getEntity().getKiller().getLocation(), EntityType.EXPERIENCE_ORB);
+        Entity e = w.spawnEntity(event.getEntity().getKiller().getEyeLocation(), EntityType.EXPERIENCE_ORB);
         ((ExperienceOrb) e).setExperience(event.getDroppedExp());
         event.setDroppedExp(0);
     }
