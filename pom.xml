@@ -65,11 +65,11 @@
             <version>4.12</version>
         </dependency>
         <dependency>
-            <groupId>BossAPI</groupId>
-            <artifactId>LorinthsBossApi</artifactId>
-            <version>1.0</version>
+            <groupId>MythicMobs</groupId>
+            <artifactId>MythicMobs</artifactId>
+            <version>2.4.5</version>
             <scope>system</scope>
-            <systemPath>${basedir}/lib/LorinthsBossApi.jar</systemPath>
+            <systemPath>${basedir}/lib/MythicMobs-2.4.5.jar</systemPath>
         </dependency>
     </dependencies>
 

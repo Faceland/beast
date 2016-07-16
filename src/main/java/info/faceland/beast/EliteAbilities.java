@@ -22,6 +22,8 @@
  */
 package info.faceland.beast;
 
+import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
@@ -52,6 +54,9 @@ public class EliteAbilities implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEliteDamage(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof MythicMob) {
+            return;
+        }
         if (event.getDamager() == null || event.isCancelled()) {
             return;
         }
@@ -105,6 +110,9 @@ public class EliteAbilities implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEliteDeath(EntityDeathEvent event) {
+        if (event.getEntity() instanceof MythicMob) {
+            return;
+        }
         if (!event.getEntity().hasMetadata("RANK")) {
             return;
         }

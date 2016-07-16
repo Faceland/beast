@@ -26,6 +26,8 @@ import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 
+import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -70,6 +72,9 @@ public final class BeastListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
+        if (event.getEntity() instanceof MythicMob) {
+            return;
+        }
         BeastData data = plugin.getData(event.getEntity().getType());
         if (data == null || event.isCancelled()) {
             return;
@@ -187,7 +192,7 @@ public final class BeastListener implements Listener {
         }
 
         if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
-            if (random.nextDouble() < 0.85) {
+            if (random.nextDouble() < 0.75) {
                 event.getDrops().clear();
             } else {
                 dropDrops(event, data);
