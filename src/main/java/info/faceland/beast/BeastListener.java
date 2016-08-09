@@ -81,6 +81,13 @@ public final class BeastListener implements Listener {
             return;
         }
 
+        int startingLevel = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld()
+                .getName() + ".starting-level", -1);
+
+        if (startingLevel < 0) {
+            return;
+        }
+
         if (event.getEntity() instanceof Rabbit) {
             if (random.nextDouble() > plugin.getSettings().getDouble("config.killer-bunny-chance", 0.05)) {
                 return;
@@ -94,12 +101,6 @@ public final class BeastListener implements Listener {
             rabbit.setAgeLock(true);
         }
 
-        int startingLevel = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld()
-                .getName() + ".starting-level", -1);
-
-        if (startingLevel < 0) {
-            return;
-        }
         int rank = 0;
         int level = 1;
         double hpMult = 1;
