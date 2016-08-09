@@ -26,9 +26,9 @@ import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 
-import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
-
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -38,6 +38,7 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Rabbit;
 import org.bukkit.entity.ShulkerBullet;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
@@ -72,12 +73,25 @@ public final class BeastListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCreatureSpawnHighest(CreatureSpawnEvent event) {
-        if (event.getEntity() instanceof MythicMob) {
+        if (plugin.getApi().isBoss(event.getEntity())) {
             return;
         }
         BeastData data = plugin.getData(event.getEntity().getType());
         if (data == null || event.isCancelled()) {
             return;
+        }
+
+        if (event.getEntity() instanceof Rabbit) {
+            if (random.nextDouble() > plugin.getSettings().getDouble("config.killer-bunny-chance", 0.05)) {
+                return;
+            }
+            if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.BREEDING) {
+                return;
+            }
+            Rabbit rabbit = (Rabbit)event.getEntity();
+            rabbit.setRabbitType(Rabbit.Type.THE_KILLER_BUNNY);
+            rabbit.setAdult();
+            rabbit.setAgeLock(true);
         }
 
         int startingLevel = plugin.getSettings().getInt("config.enabled-worlds." + event.getLocation().getWorld()
@@ -180,7 +194,7 @@ public final class BeastListener implements Listener {
 
         if (data == null) {
             if (event.getEntity().getKiller() == null) {
-                if (random.nextDouble() < 0.75) {
+                if (random.nextDouble() < 0.85) {
                     event.getDrops().clear();
                 }
             }
@@ -192,7 +206,7 @@ public final class BeastListener implements Listener {
         }
 
         if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
-            if (random.nextDouble() < 0.75) {
+            if (random.nextDouble() < 0.5) {
                 event.getDrops().clear();
             } else {
                 dropDrops(event, data);
@@ -234,15 +248,12 @@ public final class BeastListener implements Listener {
             return;
         }
         e.setCancelled(true);
-        Witch w = (Witch) e.getEntity().getShooter();
-        ShulkerBullet magicProj = w.getWorld().spawn(w.getEyeLocation(), ShulkerBullet.class);
-        w.getWorld().playSound(w.getLocation(), Sound.ENTITY_BLAZE_HURT, 0.9f, 2f);
-
-        magicProj.setShooter(w);
-        magicProj.setTarget(w.getTarget());
+        shootWitchBall((Witch) e.getEntity().getShooter());
+        shootWitchBall((Witch) e.getEntity().getShooter());
+        shootWitchBall((Witch) e.getEntity().getShooter());
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onWitchSpell(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof ShulkerBullet)) {
             return;
@@ -251,6 +262,9 @@ public final class BeastListener implements Listener {
             return;
         }
         if (!(e.getEntity() instanceof LivingEntity)) {
+            return;
+        }
+        if (e.isCancelled()) {
             return;
         }
         LivingEntity t = (LivingEntity) e.getEntity();
@@ -266,7 +280,15 @@ public final class BeastListener implements Listener {
 
     }
 
-    public void dropDrops(EntityDeathEvent event, BeastData data) {
+    private void shootWitchBall(Witch w) {
+        ShulkerBullet magicProj = w.getWorld().spawn(w.getEyeLocation(), ShulkerBullet.class);
+        w.getWorld().playSound(w.getLocation(), Sound.ENTITY_BLAZE_HURT, 0.9f, 2f);
+
+        magicProj.setShooter(w);
+        magicProj.setTarget(w.getTarget());
+    }
+
+    private void dropDrops(EntityDeathEvent event, BeastData data) {
         if (!data.getDrops().isEmpty()) {
             event.getDrops().clear();
             for (DropData dropData : data.getDrops()) {

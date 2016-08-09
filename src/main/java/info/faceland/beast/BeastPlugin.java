@@ -43,12 +43,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.Lorinth.BossApi.BossApi;
+
 public final class BeastPlugin extends FacePlugin {
 
     private Map<EntityType, BeastData> beastDataMap;
     private VersionedSmartYamlConfiguration configYAML;
     private VersionedSmartYamlConfiguration monstersYAML;
     private MasterConfiguration settings;
+
+    private BossApi api;
 
     @Override
     public void enable() {
@@ -66,6 +70,8 @@ public final class BeastPlugin extends FacePlugin {
         if (monstersYAML.update()) {
             getLogger().info("Updating monsters.yml");
         }
+
+        api = BossApi.getPlugin();
 
         settings = new MasterConfiguration();
 
@@ -148,10 +154,15 @@ public final class BeastPlugin extends FacePlugin {
     @Override
     public void disable() {
         HandlerList.unregisterAll(this);
+        api = null;
         settings = null;
         monstersYAML = null;
         configYAML = null;
         beastDataMap = null;
+    }
+
+    public BossApi getApi() {
+        return api;
     }
 
     private PotionEffect parsePotionEffect(String s) {
