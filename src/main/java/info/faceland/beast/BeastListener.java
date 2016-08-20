@@ -26,9 +26,7 @@ import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -48,7 +46,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -59,14 +56,14 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
 
-public final class BeastListener implements Listener {
+final class BeastListener implements Listener {
 
     private final BeastPlugin plugin;
     private final Random random;
     private static final PotionEffectType[] WITCH_SPELLS = {PotionEffectType.WEAKNESS, PotionEffectType.WITHER,
             PotionEffectType.POISON, PotionEffectType.SLOW_DIGGING, PotionEffectType.POISON};
 
-    public BeastListener(BeastPlugin plugin) {
+    private BeastListener(BeastPlugin plugin) {
         this.plugin = plugin;
         this.random = new Random(System.currentTimeMillis());
     }
@@ -218,9 +215,12 @@ public final class BeastListener implements Listener {
 
         dropDrops(event, data);
 
-        EntityDamageEvent.DamageCause damageCause = event.getEntity().getLastDamageCause().getCause();
-        if (event.getEntity().getKiller() == null && damageCause != EntityDamageEvent.DamageCause.ENTITY_ATTACK &&
-                damageCause != EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+        if (event.getEntity().getKiller() == null) {
+            event.setDroppedExp(0);
+            return;
+        }
+
+        if (plugin.getApi().isBoss(event.getEntity())) {
             return;
         }
 

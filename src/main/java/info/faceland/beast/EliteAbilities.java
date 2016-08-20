@@ -39,19 +39,19 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
 
-public class EliteAbilities implements Listener {
+class EliteAbilities implements Listener {
 
     private final BeastPlugin plugin;
     private final Random random;
 
-    public EliteAbilities(BeastPlugin plugin) {
+    private EliteAbilities(BeastPlugin plugin) {
         this.plugin = plugin;
         this.random = new Random(System.currentTimeMillis());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEliteDamage(EntityDamageByEntityEvent event) {
-        if (plugin.getApi().isBoss(event.getEntity())) {
+        if (plugin.getApi().isBoss(event.getDamager())) {
             return;
         }
         if (event.getDamager() == null || event.isCancelled()) {
