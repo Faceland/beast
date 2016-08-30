@@ -41,6 +41,7 @@ import org.bukkit.entity.Rabbit;
 import org.bukkit.entity.ShulkerBullet;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Witch;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -277,6 +278,9 @@ final class BeastListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onWitchPotionThrow(ProjectileLaunchEvent e) {
         if (!(e.getEntity().getShooter() instanceof Witch)) {
+            return;
+        }
+        if (!(e.getEntity() instanceof ThrownPotion)) {
             return;
         }
         e.setCancelled(true);
