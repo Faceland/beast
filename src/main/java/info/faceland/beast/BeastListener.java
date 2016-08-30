@@ -30,6 +30,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
@@ -63,7 +64,7 @@ final class BeastListener implements Listener {
     private static final PotionEffectType[] WITCH_SPELLS = {PotionEffectType.WEAKNESS, PotionEffectType.WITHER,
             PotionEffectType.POISON, PotionEffectType.SLOW_DIGGING, PotionEffectType.POISON};
 
-    private BeastListener(BeastPlugin plugin) {
+    public BeastListener(BeastPlugin plugin) {
         this.plugin = plugin;
         this.random = new Random(System.currentTimeMillis());
     }
@@ -181,6 +182,36 @@ final class BeastListener implements Listener {
                 false, false));
         double damage = (data.getDamageExpression().setVariable("LEVEL", level).evaluate());
         event.getEntity().setMetadata("DAMAGE", new FixedMetadataValue(plugin, damage));
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof LivingEntity)) {
+            return;
+        }
+        if (plugin.getApi().isBoss(event.getDamager())) {
+            return;
+        }
+        LivingEntity a;
+        if (event.getDamager() instanceof Projectile) {
+            a = (LivingEntity) ((Projectile) event.getDamager()).getShooter();
+        } else {
+            a = (LivingEntity) event.getDamager();
+        }
+        if (a.hasMetadata("DAMAGE")) {
+            double damage = a.getMetadata("DAMAGE").get(0).asDouble();
+            if (a instanceof Creeper) {
+                if (a.getFireTicks() > 0) {
+                    event.getEntity().setFireTicks(event.getEntity().getFireTicks() + 80);
+                }
+                if (((Creeper) a).isPowered()) {
+                    damage = damage * Math.max(0.3, 3 - (a.getLocation().distance(event.getEntity().getLocation()) / 2));
+                } else {
+                    damage = damage * Math.max(0.3, 1 - (a.getLocation().distance(event.getEntity().getLocation()) / 3));
+                }
+            }
+            event.setDamage(damage);
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
