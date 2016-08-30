@@ -44,7 +44,7 @@ class EliteAbilities implements Listener {
     private final BeastPlugin plugin;
     private final Random random;
 
-    private EliteAbilities(BeastPlugin plugin) {
+    public EliteAbilities(BeastPlugin plugin) {
         this.plugin = plugin;
         this.random = new Random(System.currentTimeMillis());
     }
