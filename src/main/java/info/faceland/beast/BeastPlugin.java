@@ -96,22 +96,6 @@ public final class BeastPlugin extends FacePlugin {
             data.setDamageExpression(new ExpressionBuilder(damageExpStr).variables("LEVEL").build());
             data.setExperienceExpression(new ExpressionBuilder(experienceExpStr).variables("LEVEL").build());
             data.setSpeedExpression(new ExpressionBuilder(movementSpeedExpStr).variables("LEVEL").build());
-            if (cs.isConfigurationSection("potion-effects")) {
-                Map<Integer, List<PotionEffect>> effects = new HashMap<>();
-                ConfigurationSection peCS = cs.getConfigurationSection("potion-effects");
-                for (String k : peCS.getKeys(false)) {
-                    List<String> list = peCS.getStringList(k);
-                    List<PotionEffect> pe = new ArrayList<>();
-                    for (String s : list) {
-                        PotionEffect pot = parsePotionEffect(s);
-                        if (pot != null) {
-                            pe.add(pot);
-                        }
-                    }
-                    effects.put(NumberUtils.toInt(k), pe);
-                }
-                data.setPotionEffectMap(effects);
-            }
             if (cs.isConfigurationSection("drops")) {
                 List<DropData> drops = new ArrayList<>();
                 ConfigurationSection dCS = cs.getConfigurationSection("drops");
@@ -163,19 +147,6 @@ public final class BeastPlugin extends FacePlugin {
 
     public BossApi getApi() {
         return api;
-    }
-
-    private PotionEffect parsePotionEffect(String s) {
-        String[] spl = s.split(":");
-        if (spl.length < 2) {
-            return null;
-        }
-        PotionEffectType type = PotionEffectType.getByName(spl[0]);
-        if (type == null) {
-            return null;
-        }
-        int i = NumberUtils.toInt(spl[1]);
-        return new PotionEffect(type, 20 * 5, i);
     }
 
     public MasterConfiguration getSettings() {
