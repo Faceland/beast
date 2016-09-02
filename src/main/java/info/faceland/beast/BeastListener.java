@@ -309,10 +309,10 @@ final class BeastListener implements Listener {
         if (t.hasPotionEffect(effect)) {
             t.removePotionEffect(effect);
         }
-        t.addPotionEffect(new PotionEffect(effect, 400, 0, true), false);
+        t.addPotionEffect(new PotionEffect(effect, 200, 0, true), false);
 
         t.removePotionEffect(PotionEffectType.LEVITATION);
-        t.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 2, 5, true, false));
+        t.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 1, 3, true, false));
 
     }
 
