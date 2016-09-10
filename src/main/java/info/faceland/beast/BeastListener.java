@@ -187,17 +187,14 @@ final class BeastListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof LivingEntity)) {
-            return;
-        }
-        if (plugin.getApi().isBoss(event.getDamager())) {
-            return;
-        }
         LivingEntity a;
         if (event.getDamager() instanceof Projectile) {
             a = (LivingEntity) ((Projectile) event.getDamager()).getShooter();
         } else {
             a = (LivingEntity) event.getDamager();
+        }
+        if (plugin.getApi().isBoss(a)) {
+            return;
         }
         if (a.hasMetadata("DAMAGE")) {
             double damage = a.getMetadata("DAMAGE").get(0).asDouble();

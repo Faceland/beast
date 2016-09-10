@@ -23,6 +23,7 @@
 package info.faceland.beast;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -51,21 +52,18 @@ class EliteAbilities implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEliteDamage(EntityDamageByEntityEvent event) {
-        if (plugin.getApi().isBoss(event.getDamager())) {
-            return;
-        }
-        if (event.getDamager() == null || event.isCancelled()) {
-            return;
-        }
         LivingEntity monster = null;
         if (event.getDamager() instanceof Projectile) {
-            if (((Projectile) event.getDamager()).getShooter() instanceof Monster) {
+            if (((Projectile) event.getDamager()).getShooter() instanceof Creature) {
                 monster = (LivingEntity) ((Projectile) event.getDamager()).getShooter();
             }
-        } else if (event.getDamager() instanceof Monster) {
+        } else if (event.getDamager() instanceof Creature) {
             monster = (LivingEntity) event.getDamager();
         }
         if (monster == null) {
+            return;
+        }
+        if (plugin.getApi().isBoss(monster)) {
             return;
         }
         if (monster.getCustomName() == null) {
