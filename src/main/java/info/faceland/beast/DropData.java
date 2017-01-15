@@ -22,9 +22,8 @@
  */
 package info.faceland.beast;
 
-import com.tealcube.minecraft.bukkit.hilt.HiltItemStack;
 
-import org.bukkit.Bukkit;
+import io.pixeloutlaw.minecraft.spigot.hilt.HiltItemStack;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import java.util.concurrent.ThreadLocalRandom;
