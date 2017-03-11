@@ -211,6 +211,14 @@ final class BeastListener implements Listener {
             event.setDamage(damage);
         }
     }
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onCreeperDeath(EntityDeathEvent event) {
+        if (event.getEntity().getType() == EntityType.CREEPER) {
+            event.getEntity().removePotionEffect(PotionEffectType.SPEED);
+            event.getEntity().removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
+            event.getEntity().removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+        }
+    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDeathEvent(EntityDeathEvent event) {
