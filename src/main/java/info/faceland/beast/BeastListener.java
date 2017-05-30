@@ -30,6 +30,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -42,15 +44,12 @@ import org.bukkit.entity.ShulkerBullet;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.ThrownPotion;
+import org.bukkit.entity.Vindicator;
 import org.bukkit.entity.Witch;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -68,6 +67,14 @@ final class BeastListener implements Listener {
     public BeastListener(BeastPlugin plugin) {
         this.plugin = plugin;
         this.random = new Random(System.currentTimeMillis());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onSpawnerSpawnAnimals(SpawnerSpawnEvent event) {
+        if (event.getEntity() instanceof Animals && plugin.getSettings()
+            .getDouble("config.animal-spawner-cancel-chance", 0) < random.nextDouble()) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -131,8 +138,13 @@ final class BeastListener implements Listener {
             event.getEntity().getEquipment().setItemInMainHandDropChance(0f);
         } else if (event.getEntity() instanceof Slime) {
             hpMult = (1 + (double) ((Slime) event.getEntity()).getSize()) / 4;
+        } else if (event.getEntity() instanceof Vindicator) {
+            event.getEntity().getEquipment().setItemInMainHand(new ItemStack(Material.IRON_AXE));
         }
         double rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
+        if (event.getEntity() instanceof Creeper) {
+            rankUp = 0;
+        }
         String rankName = "";
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
             rankName = ChatColor.WHITE + "Spawned ";
@@ -176,11 +188,13 @@ final class BeastListener implements Listener {
         double newMaxHealth = (1 + (rank * 0.75)) * hpMult * data.getHealthExpression().setVariable("LEVEL", level)
                 .evaluate();
         double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
-        event.getEntity().setMaxHealth(Math.max(2, newMaxHealth));
-        event.getEntity().setHealth(event.getEntity().getMaxHealth());
+        event.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.max(2, newMaxHealth));
+        event.getEntity().setHealth(newMaxHealth);
         event.getEntity().setCanPickupItems(false);
-        event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, (int) speed,
+        if (!(event.getEntity() instanceof Creeper)) {
+            event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, (int) speed,
                 false, false));
+        }
         double damage = (data.getDamageExpression().setVariable("LEVEL", level).evaluate());
         event.getEntity().setMetadata("DAMAGE", new FixedMetadataValue(plugin, damage));
     }
@@ -209,14 +223,6 @@ final class BeastListener implements Listener {
                 }
             }
             event.setDamage(damage);
-        }
-    }
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onCreeperDeath(EntityDeathEvent event) {
-        if (event.getEntity().getType() == EntityType.CREEPER) {
-            event.getEntity().removePotionEffect(PotionEffectType.SPEED);
-            event.getEntity().removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
-            event.getEntity().removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
         }
     }
 
@@ -318,7 +324,6 @@ final class BeastListener implements Listener {
 
         t.removePotionEffect(PotionEffectType.LEVITATION);
         t.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 1, 3, true, false));
-
     }
 
     private void shootWitchBall(Witch w) {

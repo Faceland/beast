@@ -2,6 +2,7 @@ version: "0.0.2"
 give-skeletons-sword-chance: 0.1
 killer-bunny-chance: 0.05
 mob-rankup-chance: 0.1
+animal-spawner-cancel-chance: 0.95
 enabled-worlds:
   world:
     starting-level: 3
