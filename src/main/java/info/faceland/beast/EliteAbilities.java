@@ -23,6 +23,8 @@
 package info.faceland.beast;
 
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
@@ -52,6 +54,9 @@ class EliteAbilities implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEliteDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity)) {
+            return;
+        }
         LivingEntity monster = null;
         if (event.getDamager() instanceof Projectile) {
             if (((Projectile) event.getDamager()).getShooter() instanceof Creature) {
@@ -60,13 +65,7 @@ class EliteAbilities implements Listener {
         } else if (event.getDamager() instanceof Creature) {
             monster = (LivingEntity) event.getDamager();
         }
-        if (monster == null) {
-            return;
-        }
-        if (plugin.getApi().isBoss(monster)) {
-            return;
-        }
-        if (monster.getCustomName() == null) {
+        if (monster == null || plugin.getApi().isBoss(monster) || monster.getCustomName() == null) {
             return;
         }
         String mobName = monster.getCustomName();
@@ -112,7 +111,7 @@ class EliteAbilities implements Listener {
             return;
         }
         if (event.getEntity().getMetadata("RANK").get(0).asInt() > 3) {
-            triggerDeathSkill(event.getEntity().getKiller(), event.getEntity().getMetadata("SKILL3").get(0).asInt());
+            triggerDeathSkill(event.getEntity(), event.getEntity().getKiller(), event.getEntity().getMetadata("SKILL3").get(0).asInt());
         }
 
     }
@@ -146,28 +145,30 @@ class EliteAbilities implements Listener {
         if (a instanceof Creeper) {
             return;
         }
-        a.setHealth(Math.min(a.getHealth() + (a.getMaxHealth() / 40), a.getMaxHealth()));
+        double maxHp = a.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+        a.setHealth(Math.min(a.getHealth() + (maxHp / 40), maxHp));
 
     }
 
-    private void triggerDeathSkill(LivingEntity t, int skill) {
+    private void triggerDeathSkill(LivingEntity source, LivingEntity target, int skill) {
         switch (skill) {
             case 0:
-                t.getLocation().getWorld().spawnEntity(t.getLocation(), t.getType());
-                t.getLocation().getWorld().spawnEntity(t.getLocation(), t.getType());
-                t.getLocation().getWorld().spawnEntity(t.getLocation(), t.getType());
-                t.getLocation().getWorld().spawnEntity(t.getLocation(), EntityType.BAT);
-                t.getLocation().getWorld().spawnEntity(t.getLocation(), EntityType.BAT);
-                t.getLocation().getWorld().spawnEntity(t.getLocation(), EntityType.BAT);
+                target.getLocation().getWorld().spawnEntity(source.getLocation(), source.getType());
+                target.getLocation().getWorld().spawnEntity(source.getLocation(), source.getType());
+                target.getLocation().getWorld().spawnEntity(source.getLocation(), source.getType());
+
+                target.getLocation().getWorld().spawnEntity(target.getLocation(), EntityType.VEX);
+                target.getLocation().getWorld().spawnEntity(target.getLocation(), EntityType.VEX);
+                target.getLocation().getWorld().spawnEntity(target.getLocation(), EntityType.VEX);
                 break;
             case 1:
-                t.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 200, 1, true), false);
-                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 3, true), false);
+                target.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 200, 1, true), false);
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 3, true), false);
                 break;
             case 2:
-                t.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 2, true), false);
-                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 200, 1, true), false);
-                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 7, true), false);
+                target.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 2, true), false);
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 200, 1, true), false);
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 7, true), false);
                 break;
         }
     }
