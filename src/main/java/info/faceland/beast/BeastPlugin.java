@@ -22,8 +22,13 @@
  */
 package info.faceland.beast;
 
+import bossapi.BossApi;
 import com.tealcube.minecraft.bukkit.facecore.plugin.FacePlugin;
 import com.tealcube.minecraft.bukkit.shade.objecthunter.exp4j.ExpressionBuilder;
+import info.faceland.beast.listeners.DeathListener;
+import info.faceland.beast.listeners.EliteListener;
+import info.faceland.beast.listeners.MagicListener;
+import info.faceland.beast.listeners.SpawnListener;
 import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedSmartYamlConfiguration;
@@ -39,8 +44,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import me.Lorinth.BossApi.BossApi;
 
 public final class BeastPlugin extends FacePlugin {
 
@@ -78,8 +81,11 @@ public final class BeastPlugin extends FacePlugin {
             if (!monstersYAML.isConfigurationSection(key)) {
                 continue;
             }
-            EntityType entityType = EntityType.valueOf(key);
-            if (entityType == null) {
+            EntityType entityType;
+            try {
+                 entityType = EntityType.valueOf(key);
+            } catch (IllegalArgumentException e) {
+                System.out.println("ERROR! No entity found for " + key);
                 continue;
             }
             ConfigurationSection cs = monstersYAML.getConfigurationSection(key);
@@ -128,8 +134,10 @@ public final class BeastPlugin extends FacePlugin {
             beastDataMap.put(entityType, data);
         }
 
-        Bukkit.getPluginManager().registerEvents(new BeastListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new EliteAbilities(this), this);
+        Bukkit.getPluginManager().registerEvents(new SpawnListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new MagicListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new DeathListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new EliteListener(this), this);
     }
 
     @Override

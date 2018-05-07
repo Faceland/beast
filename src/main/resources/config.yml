@@ -1,5 +1,8 @@
 version: "0.0.2"
 give-skeletons-sword-chance: 0.1
+give-skeletons-wand-chance: 0.1
+replace-witch-evoker: 0.15
+replace-witch-illusioner: 0.05
 killer-bunny-chance: 0.05
 mob-rankup-chance: 0.1
 animal-spawner-cancel-chance: 0.95
@@ -7,7 +10,3 @@ enabled-worlds:
   world:
     starting-level: 3
     distance-per-level: 150
-    ambient-spawn-limit: 50
-    monster-spawn-limit: 70
-    animal-spawn-limit: 50
-    wave-length: 2

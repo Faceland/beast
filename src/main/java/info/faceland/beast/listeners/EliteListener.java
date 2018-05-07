@@ -20,8 +20,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package info.faceland.beast;
+package info.faceland.beast.listeners;
 
+import info.faceland.beast.BeastPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Creature;
@@ -40,12 +41,12 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
 
-class EliteAbilities implements Listener {
+public class EliteListener implements Listener {
 
     private final BeastPlugin plugin;
     private final Random random;
 
-    public EliteAbilities(BeastPlugin plugin) {
+    public EliteListener(BeastPlugin plugin) {
         this.plugin = plugin;
         this.random = new Random(System.currentTimeMillis());
     }
@@ -74,16 +75,16 @@ class EliteAbilities implements Listener {
             } else if (mobName.startsWith(ChatColor.DARK_PURPLE + "Rare")) {
                 monster.setMetadata("RANK", new FixedMetadataValue(plugin, 3));
                 monster.setMetadata("SKILL1", new FixedMetadataValue(plugin, random.nextInt(3)));
-                monster.setMetadata("SKILL2", new FixedMetadataValue(plugin, random.nextInt(4)));
+                monster.setMetadata("SKILL2", new FixedMetadataValue(plugin, random.nextInt(3)));
             } else if (mobName.startsWith(ChatColor.RED + "Epic")) {
                 monster.setMetadata("RANK", new FixedMetadataValue(plugin, 4));
                 monster.setMetadata("SKILL1", new FixedMetadataValue(plugin, random.nextInt(3)));
-                monster.setMetadata("SKILL2", new FixedMetadataValue(plugin, random.nextInt(4)));
+                monster.setMetadata("SKILL2", new FixedMetadataValue(plugin, random.nextInt(3)));
                 monster.setMetadata("SKILL3", new FixedMetadataValue(plugin, random.nextInt(3)));
             } else if (mobName.startsWith(ChatColor.GOLD + "Legendary")) {
                 monster.setMetadata("RANK", new FixedMetadataValue(plugin, 5));
                 monster.setMetadata("SKILL1", new FixedMetadataValue(plugin, random.nextInt(3)));
-                monster.setMetadata("SKILL2", new FixedMetadataValue(plugin, random.nextInt(4)));
+                monster.setMetadata("SKILL2", new FixedMetadataValue(plugin, random.nextInt(3)));
                 monster.setMetadata("SKILL3", new FixedMetadataValue(plugin, random.nextInt(3)));
                 monster.setMetadata("SKILL4", new FixedMetadataValue(plugin, random.nextInt(3)));
             } else {

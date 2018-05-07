@@ -20,26 +20,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package info.faceland.beast;
+package info.faceland.beast.listeners;
 
 import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.CharMatcher;
-
+import info.faceland.beast.BeastData;
+import info.faceland.beast.BeastPlugin;
+import info.faceland.beast.DropData;
+import info.faceland.beast.Vec2;
+import java.util.Random;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Animals;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.Illusioner;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Rabbit;
+import org.bukkit.entity.Shulker;
 import org.bukkit.entity.ShulkerBullet;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
@@ -49,24 +56,33 @@ import org.bukkit.entity.Witch;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
-import java.util.Random;
-
-final class BeastListener implements Listener {
+public class SpawnListener implements Listener {
 
     private final BeastPlugin plugin;
     private final Random random;
-    private static final PotionEffectType[] WITCH_SPELLS = {PotionEffectType.WEAKNESS, PotionEffectType.WITHER,
-            PotionEffectType.POISON, PotionEffectType.SLOW_DIGGING, PotionEffectType.POISON};
 
-    public BeastListener(BeastPlugin plugin) {
+    private ItemStack skeletonSword;
+    private ItemStack skeletonWand;
+    private ItemStack witchHat;
+
+    public SpawnListener(BeastPlugin plugin) {
         this.plugin = plugin;
         this.random = new Random(System.currentTimeMillis());
+        skeletonSword = buildSkeletonSword();
+        skeletonWand = buildSkeletonWand();
+        witchHat = buildWitchHat();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -92,6 +108,19 @@ final class BeastListener implements Listener {
 
         if (startingLevel < 0) {
             return;
+        }
+
+        if (event.getEntity() instanceof Witch) {
+            if (random.nextDouble() < plugin.getSettings().getDouble("config.replace-witch-evoker", 0.1)) {
+                event.getEntity().getWorld().spawnEntity(event.getLocation(), EntityType.EVOKER);
+                event.setCancelled(true);
+                return;
+            }
+            if (random.nextDouble() < plugin.getSettings().getDouble("config.replace-witch-illusioner", 0.1)) {
+                event.getEntity().getWorld().spawnEntity(event.getLocation(), EntityType.ILLUSIONER);
+                event.setCancelled(true);
+                return;
+            }
         }
 
         if (event.getEntity() instanceof Rabbit) {
@@ -131,7 +160,10 @@ final class BeastListener implements Listener {
             event.getEntity().getEquipment().setHelmetDropChance(0f);
         } else if (event.getEntity() instanceof Skeleton) {
             if (random.nextDouble() < plugin.getSettings().getDouble("config.give-skeletons-sword-chance", 0.1)) {
-                event.getEntity().getEquipment().setItemInMainHand(new ItemStack(Material.STONE_SWORD));
+                event.getEntity().getEquipment().setItemInMainHand(skeletonSword);
+            } else if (random.nextDouble() < plugin.getSettings().getDouble("config.give-skeletons-wand-chance", 0.1)) {
+                event.getEntity().getEquipment().setItemInMainHand(skeletonWand);
+                event.getEntity().getEquipment().setHelmet(witchHat);
             } else {
                 event.getEntity().getEquipment().setItemInMainHand(new ItemStack(Material.BOW));
             }
@@ -140,6 +172,8 @@ final class BeastListener implements Listener {
             hpMult = (1 + (double) ((Slime) event.getEntity()).getSize()) / 4;
         } else if (event.getEntity() instanceof Vindicator) {
             event.getEntity().getEquipment().setItemInMainHand(new ItemStack(Material.IRON_AXE));
+        } else if (event.getEntity() instanceof Illusioner) {
+            event.getEntity().getEquipment().setItemInMainHand(new ItemStack(Material.BOW));
         }
         double rankUp = plugin.getSettings().getDouble("config.mob-rankup-chance", 0.1);
         if (event.getEntity() instanceof Creeper) {
@@ -184,164 +218,44 @@ final class BeastListener implements Listener {
         name = rankName + name;
 
         event.getEntity().setCustomName(name);
-
-        double newMaxHealth = (1 + (rank * 0.75)) * hpMult * data.getHealthExpression().setVariable("LEVEL", level)
-                .evaluate();
-        double speed = data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
-        event.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.max(2, newMaxHealth));
-        event.getEntity().setHealth(newMaxHealth);
         event.getEntity().setCanPickupItems(false);
-        if (!(event.getEntity() instanceof Creeper)) {
-            event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, (int) speed,
-                false, false));
-        }
-        double damage = (data.getDamageExpression().setVariable("LEVEL", level).evaluate());
-        event.getEntity().setMetadata("DAMAGE", new FixedMetadataValue(plugin, damage));
-    }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
-        LivingEntity a;
-        if (event.getDamager() instanceof Projectile) {
-            a = (LivingEntity) ((Projectile) event.getDamager()).getShooter();
-        } else {
-            a = (LivingEntity) event.getDamager();
+        double health = (1 + (rank * 0.75)) * hpMult * data.getHealthExpression().setVariable("LEVEL", level).evaluate();
+        event.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.max(2, health));
+        event.getEntity().setHealth(health);
+
+        if (event.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
+            double speed = event.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue() *
+                data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
+            event.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(speed);
         }
-        if (plugin.getApi().isBoss(a)) {
-            return;
+        if (event.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
+            double damage = (data.getDamageExpression().setVariable("LEVEL", level).evaluate());
+            event.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(damage);
         }
-        if (a.hasMetadata("DAMAGE")) {
-            double damage = a.getMetadata("DAMAGE").get(0).asDouble();
-            if (a instanceof Creeper) {
-                if (a.getFireTicks() > 0) {
-                    event.getEntity().setFireTicks(event.getEntity().getFireTicks() + 80);
-                }
-                if (((Creeper) a).isPowered()) {
-                    damage = damage * Math.max(0.3, 3 - (a.getLocation().distance(event.getEntity().getLocation()) / 2));
-                } else {
-                    damage = damage * Math.max(0.3, 1 - (a.getLocation().distance(event.getEntity().getLocation()) / 3));
-                }
-            }
-            event.setDamage(damage);
+
+        if (event.getEntity().getAttribute(Attribute.GENERIC_FLYING_SPEED) != null) {
+            double flySpeed = event.getEntity().getAttribute(Attribute.GENERIC_FLYING_SPEED).getBaseValue() *
+                data.getSpeedExpression().setVariable("LEVEL", level).evaluate();
+            event.getEntity().getAttribute(Attribute.GENERIC_FLYING_SPEED).setBaseValue(flySpeed);
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onEntityDeathEvent(EntityDeathEvent event) {
-        if (event instanceof PlayerDeathEvent) {
-            return;
-        }
-        BeastData data = plugin.getData(event.getEntityType());
-
-        if (data == null) {
-            if (event.getEntity().getKiller() == null) {
-                if (random.nextDouble() < 0.85) {
-                    event.getDrops().clear();
-                }
-            }
-            return;
-        }
-
-        if (event.getEntity().getCustomName() == null) {
-            return;
-        }
-
-        if (event.getEntity().getCustomName().startsWith(ChatColor.WHITE + "Spawned")) {
-            if (random.nextDouble() < 0.5) {
-                event.getDrops().clear();
-            } else {
-                dropDrops(event, data);
-            }
-            event.setDroppedExp(0);
-            return;
-        }
-
-        dropDrops(event, data);
-
-        if (event.getEntity().getKiller() == null) {
-            event.setDroppedExp(0);
-            return;
-        }
-
-        if (plugin.getApi().isBoss(event.getEntity())) {
-            return;
-        }
-
-        double xpMult = 1D;
-        if (event.getEntity() instanceof Slime) {
-            xpMult = (1 + ((Slime) event.getEntity()).getSize()) / 4;
-        }
-        int level = NumberUtils.toInt(CharMatcher.DIGIT.retainFrom(ChatColor.stripColor(event.getEntity().getCustomName())));
-        event.setDroppedExp((int) (data.getExperienceExpression().setVariable("LEVEL", level).evaluate() * xpMult));
+    static ItemStack buildSkeletonWand() {
+        ItemStack wand = new ItemStack(Material.BOW);
+        ItemMeta wandMeta = wand.getItemMeta();
+        wandMeta.setDisplayName("WAND");
+        wand.setItemMeta(wandMeta);
+        return wand;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onEntityDeathAutoOrb(EntityDeathEvent event) {
-        if (event.getEntity().getKiller() == null) {
-            return;
-        }
-        World w = event.getEntity().getWorld();
-        Entity e = w.spawnEntity(event.getEntity().getKiller().getEyeLocation(), EntityType.EXPERIENCE_ORB);
-        ((ExperienceOrb) e).setExperience(event.getDroppedExp());
-        event.setDroppedExp(0);
+    private static ItemStack buildSkeletonSword() {
+        return new ItemStack(Material.STONE_SWORD);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onWitchPotionThrow(ProjectileLaunchEvent e) {
-        if (!(e.getEntity().getShooter() instanceof Witch)) {
-            return;
-        }
-        if (!(e.getEntity() instanceof ThrownPotion)) {
-            return;
-        }
-        e.setCancelled(true);
-        shootWitchBall((Witch) e.getEntity().getShooter());
-        shootWitchBall((Witch) e.getEntity().getShooter());
-        shootWitchBall((Witch) e.getEntity().getShooter());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onWitchSpell(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof ShulkerBullet)) {
-            return;
-        }
-        if (!(((Projectile)e.getDamager()).getShooter() instanceof Witch)) {
-            return;
-        }
-        if (!(e.getEntity() instanceof LivingEntity)) {
-            return;
-        }
-        if (e.isCancelled()) {
-            return;
-        }
-        LivingEntity t = (LivingEntity) e.getEntity();
-
-        PotionEffectType effect = WITCH_SPELLS[random.nextInt(WITCH_SPELLS.length)];
-        if (t.hasPotionEffect(effect)) {
-            t.removePotionEffect(effect);
-        }
-        t.addPotionEffect(new PotionEffect(effect, 200, 0, true), false);
-
-        t.removePotionEffect(PotionEffectType.LEVITATION);
-        t.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 1, 3, true, false));
-    }
-
-    private void shootWitchBall(Witch w) {
-        ShulkerBullet magicProj = w.getWorld().spawn(w.getEyeLocation(), ShulkerBullet.class);
-        w.getWorld().playSound(w.getLocation(), Sound.ENTITY_BLAZE_HURT, 0.9f, 2f);
-
-        magicProj.setShooter(w);
-        magicProj.setTarget(w.getTarget());
-    }
-
-    private void dropDrops(EntityDeathEvent event, BeastData data) {
-        if (!data.getDrops().isEmpty()) {
-            event.getDrops().clear();
-            for (DropData dropData : data.getDrops()) {
-                if (random.nextDouble() < dropData.getChance()) {
-                    event.getDrops().add(dropData.toItemStack(dropData.getMinimumAmount(), dropData.getMaximumAmount()));
-                }
-            }
-        }
+    private static ItemStack buildWitchHat() {
+        ItemStack hat = new ItemStack(Material.SHEARS);
+        hat.setDurability((short)2);
+        return hat;
     }
 }
